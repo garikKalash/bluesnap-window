@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BluesnapPayment</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <style>
+    /* Bootstrap styles*/
+
+    .panel {
+      width: 70%;
+      margin: 2em auto;
+    }
+
+
+    .panel-body {
+      width: 90%;
+      margin: 2em auto;
+    }
+
+
+    .helper-text {
+      color: #e93143;
+      font-size: 12px;
+      margin-top: 5px;
+      height: 12px;
+      display: block;
+    }
+
+    .helper-text-green {
+      color: green;
+    }
+
+    /* Hosted Payment Fields styles*/
+    .hosted-field-focus {
+      border: 1px solid #66afe9;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+    }
+
+    .hosted-field-invalid {
+      border: 1px solid #e93143;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,49,67, 0.8);
+    }
+
+    .hosted-field-valid {
+      border: 1px solid #14ba57 ;
+    }
+
+  </style>
+</head>
+<body>
+  <app-root></app-root>
+  <!--BlueSnap Hosted Payment Fields JavaScript file-->
+  <script type="text/javascript" src="https://sandbox.bluesnap.com/web-sdk/4/bluesnap.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    /* Defining helper functions/objects */
+    // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
+    function changeImpactedElement(tagId, removeClass, addClass) {
+      removeClass = removeClass || "";
+      addClass = addClass || "";
+      $("[data-bluesnap=" + tagId + "]")
+        .removeClass(removeClass)
+        .addClass(addClass);
+    }
+    // cardUrl: object that stores card type code (received from BlueSnap) and associated card image URL
+    var cardUrl = {
+      "AMEX": "https://files.readme.io/97e7acc-Amex.png",
+      "DINERS": "https://files.readme.io/8c73810-Diners_Club.png",
+      "DISCOVER": "https://files.readme.io/caea86d-Discover.png",
+      "JCB": "https://files.readme.io/e076aed-JCB.png",
+      "MASTERCARD": "https://files.readme.io/5b7b3de-Mastercard.png",
+      "VISA": "https://files.readme.io/9018c4f-Visa.png"
+    };
+    var queryString = window.location.search
+    var urlParams = new URLSearchParams(queryString);
+    var btoken = urlParams.get('token');
+    var plan_id = urlParams.get('plan_id');
+    var uid = urlParams.get('uid');
+    var email = urlParams.get('email');
+
+    /* Defining bsObj: object that stores Hosted Payment Fields
+    event handlers, styling, placeholder text, etc. */
+    var bsObj = {
+      token: btoken,
+      onFieldEventHandler: {
+        onFocus: function(tagId) {
+          // Handle focus
+          changeImpactedElement(tagId, "hosted-field-valid hosted-field-invalid", "hosted-field-focus");
+        },
+        onBlur: function(tagId) {
+          // Handle blur
+          changeImpactedElement(tagId, "hosted-field-focus");
+        },
+        onError: function(tagId, errorCode, errorDescription) {
+          // Handle a change in validation
+          changeImpactedElement(tagId, "hosted-field-valid hosted-field-focus", "hosted-field-invalid");
+          $("#" + tagId + "-help").removeClass('helper-text-green').text(errorCode + " - " + errorDescription);
+        },
+        onType: function(tagId, cardType, cardData) {
+          // get card type from cardType and display card image
+          $("#card-logo > img").attr("src", cardUrl[cardType]);
+          if (null != cardData) {
+            $("#" + tagId + "-help").addClass('helper-text-green').text(JSON.stringify(cardData));
+          }
+        },
+        onValid: function(tagId) {
+          // Handle a change in validation
+          changeImpactedElement(tagId, "hosted-field-focus hosted-field-invalid", "hosted-field-valid");
+          $("#" + tagId + "-help").text("");
+        }
+      },
+      //styling is optional
+      style: {
+        // Styling all inputs
+        "input": {
+          "font-size": "14px",
+          "font-family": "Helvetica Neue,Helvetica,Arial,sans-serif",
+          "line-height": "1.42857143",
+          "color": "#555"
+        },
+
+        // Styling a specific field
+        /*"#ccn": {
+
+                        },*/
+
+        // Styling Hosted Payment Field input state
+        ":focus": {
+          "color": "#555"
+        }
+      },
+      ccnPlaceHolder: "4111222233334444",
+      cvvPlaceHolder: "123",
+      expPlaceHolder: "MM / YY"
+    }
+
+    /* After DOM is loaded, calling bluesnap.hostedPaymentFieldsCreation: function that takes token and bsObj as inputs and initiates Hosted Payment Fields */
+    $(document).ready(function() {
+      bluesnap.hostedPaymentFieldsCreate(bsObj);
+    });
+
+    /* Calling bluesnap.submitCredentials: function that submits card data to
+    BlueSnap and calls input function with card data object if submission was successful */
+    function do_when_clicking_submit_button() {
+      bluesnap.hostedPaymentFieldsSubmitData(
+        function(callback) {
+          if (null != callback.error) {
+            var errorArray = callback.error;
+            for (i in errorArray) {
+              $("#" + errorArray[i].tagId + "-help").text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
+            }
+          } else {
+            var cardData = callback.cardData;
+            console.log(
+              "Card Type: " +
+              cardData.ccType +
+              " Last 4 Digits: " +
+              cardData.last4Digits +
+              " Issuing Country: " +
+              cardData.issuingCountry +
+              " Is Regulated Card: " +
+              cardData.isRegulatedCard +
+              " Card Sub Type: " +
+              cardData.cardSubType +
+              " Bin Category: " +
+              cardData.binCategory +
+              " Exp: " +
+              cardData.exp +
+              " after that I can call final submit"
+            );
+            data = {}
+            data.token = btoken;
+            data.userId = uid;
+            data.planId = plan_id;
+
+            $.ajax({
+              type: "POST",
+              beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+              url: "http://localhost:8080/rest/payments/subscribe",
+              data: JSON.stringify(data),// now data come in this function
+              contentType: "application/json; charset=utf-8",
+              crossDomain: true,
+              dataType: "json",
+              success: function (data, status, jqXHR) {
+                alert("success");// write success in " "
+              },
+
+              error: function (jqXHR, status) {
+                // error handler
+                console.log(jqXHR);
+                alert('fail' + status.code);
+              }
+            });
+
+            // This is where you would perform final submission to your server
+          }
+        }
+      );
+    }
+  </script>
+</body>
+</html>
