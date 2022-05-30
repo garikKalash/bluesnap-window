@@ -1,4 +1,7 @@
-<div class="panel panel-default bootstrap-basic">
+<div id="error-body" class="alert alert-danger" style="display: none">
+  <p id="error-content">Oops payment isn't completed</p>
+</div>
+<div id="payment-form" class="panel panel-default bootstrap-basic">
   <form class="panel-body" id="checkout-form" action="#">
     <div class="row">
       <div class="form-group col-md-12">
@@ -13,7 +16,6 @@
           <div class="form-control" id="card-number" data-bluesnap="ccn"></div>
           <div id="card-logo" class="input-group-addon"><img src="https://files.readme.io/d1a25b4-generic-card.png" height="20px"></div>
         </div>
-        <span class="helper-text" id="ccn-help"></span>
       </div>
       <!--Hosted Field for CC EXP-->
       <div class="form-group col-xs-7">
@@ -34,5 +36,18 @@
   </form>
 
 </div>
+<div id="payment-success" class="successScreen" style="display: none">
+<div class="card">
+  <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+    <i class="success-checkmark">✓</i>
+  </div>
+  <h1 class="successH1">Success</h1>
+  <p class="successContent">The payment request is completed<br/> Thanks for your Treatment! </p>
+</div>
+</div>
 
-<div></div>
+<div id="loading-body" class="loading-container" style="display: none">
+  <div id="loading" class="loading">
+    <span style="margin-left: 15px;">Loading..</span>
+  </div>
+</div>
