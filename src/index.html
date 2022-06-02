@@ -82,6 +82,9 @@
     var plan_id = urlParams.get('plan_id');
     var uid = urlParams.get('uid');
     var email = urlParams.get('email');
+    var plan =urlParams.get('plan');
+    var animal_ids = urlParams.get('animal_ids').split(",").map(n => {return Number(n)});
+    console.log(animal_ids);
 
     /* Defining bsObj: object that stores Hosted Payment Fields
     event handlers, styling, placeholder text, etc. */
@@ -184,6 +187,9 @@
             data.token = btoken;
             data.userId = uid;
             data.planId = plan_id;
+            data.plan = plan;
+            data.animalIds = animal_ids;
+
 
             $.ajax({
               type: "POST",
