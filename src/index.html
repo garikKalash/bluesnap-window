@@ -83,7 +83,7 @@
     var uid = urlParams.get('uid');
     var email = urlParams.get('email');
     var plan =urlParams.get('plan');
-    var animal_ids = urlParams.get('animal_ids').split(",").map(n => {return Number(n)});
+    var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
     console.log(animal_ids);
 
     /* Defining bsObj: object that stores Hosted Payment Fields
