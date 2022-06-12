@@ -1,11 +1,9 @@
-<div id="error-body" class="alert alert-danger" style="display: none">
-  <p id="error-content">Oops payment isn't completed</p>
-</div>
+<div style="width: 100%; text-align: center; color: white; font-weight: bold">{{period}} {{plan?.replace('_',' ')}}</div>
 <div id="payment-form" class="panel panel-default bootstrap-basic">
   <form class="panel-body" id="checkout-form" action="#">
     <div class="row">
       <div class="form-group col-md-12">
-        <label for="cardholder-name">Name on Card</label>
+        <label for="cardholder-name">Full name</label>
         <input type="text" class="form-control" id="cardholder-name" placeholder="Full Name">
         <span class="helper-text"></span>
       </div>
@@ -25,14 +23,17 @@
       </div>
       <!--Hosted Field for CC CVV-->
       <div class="form-group col-xs-5">
-        <label for="cvv">Security Code</label>
+        <label for="cvv">CVV</label>
         <div class="form-control" id="cvv" data-bluesnap="cvv"></div>
         <span class="helper-text" id='cvv-help'></span>
       </div>
     </div>
+    <div style="text-align: center; width: 100%">
+      <p>{{detailString}}</p>
+      <p><span style="font-weight: bold">TOTAL:</span> {{total}} $</p>
 
-    <button class="btn btn-success btn-lg col-xs-6 col-xs-offset-3" type="button" id="submit-button" onclick="do_when_clicking_submit_button()">Pay Now</button>
-
+    </div>
+    <button class="btn btn-success btn-lg col-xs-6 col-xs-offset-3" style="background-color: deeppink !important; text-align: center !important; border: none !important;" type="button" id="submit-button" onclick="do_when_clicking_submit_button()">Subscribe</button>
   </form>
 
 </div>

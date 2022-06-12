@@ -7,22 +7,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
   <style>
     /* Bootstrap styles*/
+    body{
+      background-image: url("/assets/Asset_Floor.png")
+    }
 
     .panel {
       width: 70%;
       margin: 2em auto;
     }
-
-
     .panel-body {
       width: 90%;
       margin: 2em auto;
     }
-
-
     .helper-text {
       color: #e93143;
       font-size: 12px;
@@ -30,7 +29,6 @@
       height: 12px;
       display: block;
     }
-
     .helper-text-green {
       color: green;
     }
@@ -53,6 +51,10 @@
   </style>
 </head>
 <body>
+  <div style="background-image: url('/assets/Logo_Treat_Color.png');background-size: 100%;
+    width: 90px;
+    height: 90px;
+    background-repeat: no-repeat;"></div>
   <app-root></app-root>
   <!--BlueSnap Hosted Payment Fields JavaScript file-->
   <script type="text/javascript" src="https://sandbox.bluesnap.com/web-sdk/4/bluesnap.js"></script>
@@ -194,7 +196,7 @@
             $.ajax({
               type: "POST",
               beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+              url: "http://localhost:8080/rest/payments/subscribe",
               data: JSON.stringify(data),// now data come in this function
               contentType: "application/json; charset=utf-8",
               crossDomain: true,
