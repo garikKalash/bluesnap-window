@@ -1,4 +1,4 @@
-<div style="width: 100%; text-align: center; color: white; font-weight: bold;font-size: x-large;">{{period}} {{plan?.replace('_',' ')}}</div>
+<div style="width: 100%; text-align: center; color: white; font-weight: bold;font-size: x-large;">{{plan?.replace('_',' ')}}</div>
 <div id="payment-form" class="panel panel-default bootstrap-basic">
   <form class="panel-body" id="checkout-form" action="#">
     <div class="row">
@@ -30,7 +30,8 @@
     </div>
     <div style="text-align: center; width: 100%">
       <p>{{detailString}}</p>
-      <p><span style="font-weight: bold">TOTAL:</span> {{total}} $</p>
+      <p *ngIf="gifts"><span style="font-weight: bold; font-style: italic">Gifts:</span> {{gifts}}</p>
+      <p><span style="font-weight: bold">Total:</span> ${{total}}</p>
 
     </div>
     <button class="btn btn-success btn-lg col-xs-6 col-xs-offset-3" style="background-color: deeppink !important; text-align: center !important; border: none !important;" type="button" id="submit-button" onclick="do_when_clicking_submit_button()">Subscribe</button>

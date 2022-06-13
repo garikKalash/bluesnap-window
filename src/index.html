@@ -52,9 +52,11 @@
 </head>
 <body>
   <div style="background-image: url('/assets/Logo_Treat_Color.png');background-size: 100%;
-    width: 90px;
-    height: 90px;
-    background-repeat: no-repeat;"></div>
+    background-repeat: no-repeat;
+    width: 65px;
+    height: 72px;
+    margin-left: 2%;
+    margin-top: 3%;"></div>
   <app-root></app-root>
   <!--BlueSnap Hosted Payment Fields JavaScript file-->
   <script type="text/javascript" src="https://sandbox.bluesnap.com/web-sdk/4/bluesnap.js"></script>
@@ -196,7 +198,7 @@
             $.ajax({
               type: "POST",
               beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-              url: "http://localhost:8080/rest/payments/subscribe",
+              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
               data: JSON.stringify(data),// now data come in this function
               contentType: "application/json; charset=utf-8",
               crossDomain: true,
