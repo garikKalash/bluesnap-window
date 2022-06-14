@@ -1,4 +1,6 @@
-<div style="width: 100%; text-align: center; color: white; font-weight: bold;font-size: x-large;">{{plan?.replace('_',' ')}}</div>
+<div style="width: 100%; text-align: center; color: white; font-weight: bold;font-size: x-large;">
+  {{plan == 'FREE_DELIVERY' ? 'Free deliveries' : (plan == 'MEAL_1' ? '1 Meal / Day': '3 Meal / Day')}}
+</div>
 <div id="payment-form" class="panel panel-default bootstrap-basic">
   <form class="panel-body" id="checkout-form" action="#">
     <div class="row">
@@ -29,23 +31,22 @@
       </div>
     </div>
     <div style="text-align: center; width: 100%">
+      <p *ngIf="gifts"><span style="font-weight: bold; font-style: italic">Gift/s:</span> {{gifts}}</p>
       <p>{{detailString}}</p>
-      <p *ngIf="gifts"><span style="font-weight: bold; font-style: italic">Gifts:</span> {{gifts}}</p>
       <p><span style="font-weight: bold">Total:</span> ${{total}}</p>
-
     </div>
     <button class="btn btn-success btn-lg col-xs-6 col-xs-offset-3" style="background-color: deeppink !important; text-align: center !important; border: none !important;" type="button" id="submit-button" onclick="do_when_clicking_submit_button()">Subscribe</button>
   </form>
 
 </div>
 <div id="payment-success" class="successScreen" style="display: none">
-<div class="card">
-  <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
-    <i class="success-checkmark">✓</i>
+  <div class="card">
+    <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+      <i class="success-checkmark">✓</i>
+    </div>
+    <h1 class="successH1">Success</h1>
+    <p class="successContent">The payment request is completed<br/> Thanks for your Treatment! </p>
   </div>
-  <h1 class="successH1">Success</h1>
-  <p class="successContent">The payment request is completed<br/> Thanks for your Treatment! </p>
-</div>
 </div>
 
 <div id="loading-body" class="loading-container" style="display: none">
