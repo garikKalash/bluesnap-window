@@ -3,15 +3,14 @@
 // The list of file replacements can be found in `angular.json`.
 export const environment = {
   firebase: {
-    projectId: 'dogapp-67827',
-    appId: '1:911770351245:web:5d31f70588d98f3c56d4c4',
-    databaseURL: 'https://dogapp-67827.firebaseio.com',
-    storageBucket: 'dogapp-67827.appspot.com',
-    locationId: 'us-central',
-    apiKey: 'AIzaSyD0dcS7gket5FjBMIjjzhMpwIJjoufjstE',
-    authDomain: 'dogapp-67827.firebaseapp.com',
-    messagingSenderId: '911770351245',
-    measurementId: 'G-KB3DBR4FC7',
+    apiKey: "AIzaSyANHmTLCWt1dkYN4w-PQeQPKJhTd9bYvto",
+    authDomain: "treattestenvironment.firebaseapp.com",
+    databaseURL: "https://treattestenvironment-default-rtdb.firebaseio.com",
+    projectId: "treattestenvironment",
+    storageBucket: "treattestenvironment.appspot.com",
+    messagingSenderId: "871766046722",
+    appId: "1:871766046722:web:aaff0322598e8592248f1b",
+    measurementId: "G-15R8F2SJB1"
   },
   production: false,
   apiUrl:  "https://treattestenvironment.uc.r.appspot.com"
