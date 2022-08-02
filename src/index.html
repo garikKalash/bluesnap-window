@@ -9,11 +9,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
   <style>
-    /* Bootstrap styles*/
-    body{
-      background-image: url("/assets/Asset_Floor.png")
-    }
-
     .panel {
       width: 70%;
       margin: 2em auto;
@@ -61,6 +56,7 @@
 <!--BlueSnap Hosted Payment Fields JavaScript file-->
 <script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AXVSORFJEAMbjbaigM4xalpH8QswW6ayaQMXM3QD_MUV9aZuF1GSZQQk_VhbLYSXuHZkNkHXiHpu-NUk&vault=true&intent=subscription"></script>
 <script>
   /* Defining helper functions/objects */
   // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
@@ -84,11 +80,61 @@
   var urlParams = new URLSearchParams(queryString);
   var btoken = urlParams.get('token');
   var plan_id = urlParams.get('plan_id');
+  var paypal_plan_id = urlParams.get('paypal_plan_id');
   var uid = urlParams.get('uid');
   var email = urlParams.get('email');
   var plan =urlParams.get('plan');
   var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
   console.log(animal_ids);
+  paypal.Buttons({
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({
+        'plan_id': paypal_plan_id, // Creates the subscription
+        'application_context': {
+          'shipping_preference': 'NO_SHIPPING'
+        }
+      });
+    },
+    onApprove: function(data, actions) {
+      console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
+      data = {}
+      data.token = btoken;
+      data.userId = uid;
+      data.planId = plan_id;
+      data.plan = plan;
+      data.animalIds = animal_ids;
+      data.paypalSubId = data.subscriptionID;
+      $.ajax({
+        type: "POST",
+        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+        url: "http://localhost:8080/rest/payments/paypal/subscribe",
+        data: JSON.stringify(data),// now data come in this function
+        contentType: "application/json; charset=utf-8",
+        crossDomain: true,
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+          $("#payment-form").hide();
+          $("#payment-success").show();
+          loadingDiv.style.visibility = 'hidden';
+          $('#loading-body').hide();
+        },
+        error: function (jqXHR, status) {
+          $('#error-body').show();
+          $('#error-content').text(jqXHR.responseJSON.message);
+          loadingDiv.style.visibility = 'hidden';
+          $('#loading-body').hide();
+        }
+      });
+    },
+    onError: function (err) {
+      // For example, redirect to a specific error page
+      $('#error-body').show();
+      $('#error-content').text(err);
+      loadingDiv.style.visibility = 'hidden';
+      $('#loading-body').hide();
+    }
+  }).render('#paypal-button-container');
+
 
   /* Defining bsObj: object that stores Hosted Payment Fields
   event handlers, styling, placeholder text, etc. */
@@ -96,10 +142,13 @@
     token: btoken,
     onFieldEventHandler: {
       onFocus: function(tagId) {
+        console.log('Focus'+tagId)
+        $("#"+tagId+'-analytics').click()
         // Handle focus
         changeImpactedElement(tagId, "hosted-field-valid hosted-field-invalid", "hosted-field-focus");
       },
       onBlur: function(tagId) {
+        console.log('Blur'+tagId)
         // Handle blur
         changeImpactedElement(tagId, "hosted-field-focus");
       },
@@ -109,6 +158,7 @@
         $("#" + tagId + "-help").removeClass('helper-text-green').text(errorCode + " - " + errorDescription);
       },
       onType: function(tagId, cardType, cardData) {
+        console.log('Typeing'+tagId)
         // get card type from cardType and display card image
         $("#card-logo > img").attr("src", cardUrl[cardType]);
         if (null != cardData) {
@@ -154,6 +204,7 @@
   /* Calling bluesnap.submitCredentials: function that submits card data to
   BlueSnap and calls input function with card data object if submission was successful */
   function do_when_clicking_submit_button() {
+    $("#subscribe-analytics").click()
     $('#error-body').hide();
     $('#loading-body').show();
     var loadingDiv = document.getElementById('loading');
@@ -166,9 +217,11 @@
           for (i in errorArray) {
             $('#error-content').text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
           }
+          $('#invalid-bluesnap-analytic').click()
           loadingDiv.style.visibility = 'hidden';
           $('#loading-body').hide();
         } else {
+          $('#valid-bluesnap-analytic').click()
           var cardData = callback.cardData;
           console.log(
             "Card Type: " +
@@ -198,12 +251,13 @@
           $.ajax({
             type: "POST",
             beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+            url: "https://dogapp-67827.appspot.com/rest/payments/subscribe",
             data: JSON.stringify(data),// now data come in this function
             contentType: "application/json; charset=utf-8",
             crossDomain: true,
             dataType: "json",
             success: function (data, status, jqXHR) {
+              $("#subscribe-analytics-success").click()
               $("#payment-form").hide();
               $("#payment-success").show();
               loadingDiv.style.visibility = 'hidden';
@@ -213,6 +267,7 @@
             error: function (jqXHR, status) {
               $('#error-body').show();
               $('#error-content').text(jqXHR.responseJSON.message);
+              $("#subscribe-analytics-error").click()
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
             }
@@ -224,5 +279,6 @@
     );
   }
 </script>
+
 </body>
 </html>
