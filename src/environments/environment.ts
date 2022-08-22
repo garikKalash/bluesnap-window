@@ -13,7 +13,7 @@ export const environment = {
     measurementId: "G-15R8F2SJB1"
   },
   production: false,
-  apiUrl:  "https://treattestenvironment.uc.r.appspot.com"
+  apiUrl:  "http://localhost:8080"
 };
 
 /*

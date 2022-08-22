@@ -8,14 +8,16 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
   <style>
     .panel {
-      width: 70%;
-      margin: 2em auto;
+      width: 95%;
+      margin: 0em auto;
+      border:none;
     }
     .panel-body {
       width: 90%;
-      margin: 2em auto;
+      margin: 1em auto;
     }
     .helper-text {
       color: #e93143;
@@ -84,200 +86,262 @@
   var uid = urlParams.get('uid');
   var email = urlParams.get('email');
   var plan =urlParams.get('plan');
+  var version =urlParams.get('version');
   var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
   console.log(animal_ids);
-  paypal.Buttons({
-    createSubscription: function(data, actions) {
-      return actions.subscription.create({
-        'plan_id': paypal_plan_id, // Creates the subscription
-        'application_context': {
-          'shipping_preference': 'NO_SHIPPING'
-        }
-      });
-    },
-    onApprove: function(data, actions) {
-      console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
-      data = {}
-      data.token = btoken;
-      data.userId = uid;
-      data.planId = paypal_plan_id;
-      data.plan = plan;
-      data.animalIds = animal_ids;
-      data.paypalSubId = data.subscriptionID;
-      $.ajax({
-        type: "POST",
-        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-        url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
-        data: JSON.stringify(data),// now data come in this function
-        contentType: "application/json; charset=utf-8",
-        crossDomain: true,
-        dataType: "json",
-        success: function (data, status, jqXHR) {
-          $("#payment-form").hide();
-          $("#payment-success").show();
-          loadingDiv.style.visibility = 'hidden';
-          $('#loading-body').hide();
+  if(paypal_plan_id) {
+    if(!version){
+      paypal.Buttons({
+        fundingSource: paypal.FUNDING.PAYPAL,
+        createSubscription: function (data, actions) {
+          return actions.subscription.create({
+            'plan_id': paypal_plan_id, // Creates the subscription
+            'application_context': {
+              'shipping_preference': 'NO_SHIPPING'
+            }
+          });
         },
-        error: function (jqXHR, status) {
-          $('#error-body').show();
-          $('#error-content').text(jqXHR.responseJSON.message);
-          loadingDiv.style.visibility = 'hidden';
-          $('#loading-body').hide();
-        }
-      });
-    },
-    onError: function (err) {
-      // For example, redirect to a specific error page
-      $('#error-body').show();
-      $('#error-content').text(err);
-      loadingDiv.style.visibility = 'hidden';
-      $('#loading-body').hide();
-    }
-  }).render('#paypal-button-container');
-
-
-  /* Defining bsObj: object that stores Hosted Payment Fields
-  event handlers, styling, placeholder text, etc. */
-  var bsObj = {
-    token: btoken,
-    onFieldEventHandler: {
-      onFocus: function(tagId) {
-        console.log('Focus'+tagId)
-        $("#"+tagId+'-analytics').click()
-        // Handle focus
-        changeImpactedElement(tagId, "hosted-field-valid hosted-field-invalid", "hosted-field-focus");
-      },
-      onBlur: function(tagId) {
-        console.log('Blur'+tagId)
-        // Handle blur
-        changeImpactedElement(tagId, "hosted-field-focus");
-      },
-      onError: function(tagId, errorCode, errorDescription) {
-        // Handle a change in validation
-        changeImpactedElement(tagId, "hosted-field-valid hosted-field-focus", "hosted-field-invalid");
-        $("#" + tagId + "-help").removeClass('helper-text-green').text(errorCode + " - " + errorDescription);
-      },
-      onType: function(tagId, cardType, cardData) {
-        console.log('Typeing'+tagId)
-        // get card type from cardType and display card image
-        $("#card-logo > img").attr("src", cardUrl[cardType]);
-        if (null != cardData) {
-          $("#" + tagId + "-help").addClass('helper-text-green').text(JSON.stringify(cardData));
-        }
-      },
-      onValid: function(tagId) {
-        // Handle a change in validation
-        changeImpactedElement(tagId, "hosted-field-focus hosted-field-invalid", "hosted-field-valid");
-        $("#" + tagId + "-help").text("");
-      }
-    },
-    //styling is optional
-    style: {
-      // Styling all inputs
-      "input": {
-        "font-size": "14px",
-        "font-family": "Helvetica Neue,Helvetica,Arial,sans-serif",
-        "line-height": "1.42857143",
-        "color": "#555"
-      },
-
-      // Styling a specific field
-      /*"#ccn": {
-
-                      },*/
-
-      // Styling Hosted Payment Field input state
-      ":focus": {
-        "color": "#555"
-      }
-    },
-    ccnPlaceHolder: "4111222233334444",
-    cvvPlaceHolder: "123",
-    expPlaceHolder: "MM / YY"
-  }
-
-  /* After DOM is loaded, calling bluesnap.hostedPaymentFieldsCreation: function that takes token and bsObj as inputs and initiates Hosted Payment Fields */
-  $(document).ready(function() {
-    bluesnap.hostedPaymentFieldsCreate(bsObj);
-  });
-
-  /* Calling bluesnap.submitCredentials: function that submits card data to
-  BlueSnap and calls input function with card data object if submission was successful */
-  function do_when_clicking_submit_button() {
-    $("#subscribe-analytics").click()
-    $('#error-body').hide();
-    $('#loading-body').show();
-    var loadingDiv = document.getElementById('loading');
-    loadingDiv.style.visibility = 'visible';
-    bluesnap.hostedPaymentFieldsSubmitData(
-      function(callback) {
-        if (null != callback.error) {
-          var errorArray = callback.error;
-          $('#error-body').show();
-          for (i in errorArray) {
-            $('#error-content').text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
-          }
-          $('#invalid-bluesnap-analytic').click()
-          loadingDiv.style.visibility = 'hidden';
-          $('#loading-body').hide();
-        } else {
-          $('#valid-bluesnap-analytic').click()
-          var cardData = callback.cardData;
-          console.log(
-            "Card Type: " +
-            cardData.ccType +
-            " Last 4 Digits: " +
-            cardData.last4Digits +
-            " Issuing Country: " +
-            cardData.issuingCountry +
-            " Is Regulated Card: " +
-            cardData.isRegulatedCard +
-            " Card Sub Type: " +
-            cardData.cardSubType +
-            " Bin Category: " +
-            cardData.binCategory +
-            " Exp: " +
-            cardData.exp +
-            " after that I can call final submit"
-          );
-          data = {}
-          data.token = btoken;
-          data.userId = uid;
-          data.planId = plan_id;
-          data.plan = plan;
-          data.animalIds = animal_ids;
-
-
+        onApprove: function (data, actions) {
+          console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
+          pdata = {}
+          pdata.token = btoken;
+          pdata.userId = uid;
+          pdata.planId = paypal_plan_id;
+          pdata.plan = plan;
+          pdata.animalIds = animal_ids;
+          pdata.paypalSubId = data.subscriptionID;
+          $('#success-paypal').click()
           $.ajax({
             type: "POST",
-            beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
-            data: JSON.stringify(data),// now data come in this function
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader('uid', uid);
+            },
+            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+            data: JSON.stringify(pdata),// now data come in this function
             contentType: "application/json; charset=utf-8",
             crossDomain: true,
             dataType: "json",
             success: function (data, status, jqXHR) {
-              $("#subscribe-analytics-success").click()
               $("#payment-form").hide();
               $("#payment-success").show();
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
             },
-
             error: function (jqXHR, status) {
               $('#error-body').show();
               $('#error-content').text(jqXHR.responseJSON.message);
-              $("#subscribe-analytics-error").click()
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
             }
           });
-
-          // This is where you would perform final submission to your server
+        },
+        onError: function (err) {
+          // For example, redirect to a specific error page
+          $('#error-body').show();
+          $('#error-content').text(err);
+          loadingDiv.style.visibility = 'hidden';
+          $('#loading-body').hide();
         }
-      }
-    );
+      }).render('#paypal-button-container');
+    } else {
+      paypal.Buttons({
+        createSubscription: function (data, actions) {
+          return actions.subscription.create({
+            'plan_id': paypal_plan_id, // Creates the subscription
+            'application_context': {
+              'shipping_preference': 'NO_SHIPPING'
+            }
+          });
+        },
+        onApprove: function (data, actions) {
+          console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
+          pdata = {}
+          pdata.token = btoken;
+          pdata.userId = uid;
+          pdata.planId = paypal_plan_id;
+          pdata.plan = plan;
+          pdata.animalIds = animal_ids;
+          pdata.paypalSubId = data.subscriptionID;
+          $('#success-paypal').click()
+          $.ajax({
+            type: "POST",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader('uid', uid);
+            },
+            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+            data: JSON.stringify(pdata),// now data come in this function
+            contentType: "application/json; charset=utf-8",
+            crossDomain: true,
+            dataType: "json",
+            success: function (data, status, jqXHR) {
+              $("#payment-form").hide();
+              $("#payment-success").show();
+              loadingDiv.style.visibility = 'hidden';
+              $('#loading-body').hide();
+            },
+            error: function (jqXHR, status) {
+              $('#error-body').show();
+              $('#error-content').text(jqXHR.responseJSON.message);
+              loadingDiv.style.visibility = 'hidden';
+              $('#loading-body').hide();
+            }
+          });
+        },
+        onError: function (err) {
+          // For example, redirect to a specific error page
+          $('#error-body').show();
+          $('#error-content').text(err);
+          loadingDiv.style.visibility = 'hidden';
+          $('#loading-body').hide();
+        }
+      }).render('#paypal-button-container');
+    }
   }
+
+
+  if(!version){
+    /* Defining bsObj: object that stores Hosted Payment Fields
+    event handlers, styling, placeholder text, etc. */
+    var bsObj = {
+      token: btoken,
+      onFieldEventHandler: {
+        onFocus: function(tagId) {
+          console.log('Focus'+tagId)
+          $("#"+tagId+'-analytics').click()
+          // Handle focus
+          changeImpactedElement(tagId, "hosted-field-valid hosted-field-invalid", "hosted-field-focus");
+        },
+        onBlur: function(tagId) {
+          console.log('Blur'+tagId)
+          // Handle blur
+          changeImpactedElement(tagId, "hosted-field-focus");
+        },
+        onError: function(tagId, errorCode, errorDescription) {
+          // Handle a change in validation
+          changeImpactedElement(tagId, "hosted-field-valid hosted-field-focus", "hosted-field-invalid");
+          $("#" + tagId + "-help").removeClass('helper-text-green').text(errorCode + " - " + errorDescription);
+        },
+        onType: function(tagId, cardType, cardData) {
+          console.log('Typeing'+tagId)
+          // get card type from cardType and display card image
+          $("#card-logo > img").attr("src", cardUrl[cardType]);
+          if (null != cardData) {
+            $("#" + tagId + "-help").addClass('helper-text-green').text(JSON.stringify(cardData));
+          }
+        },
+        onValid: function(tagId) {
+          // Handle a change in validation
+          changeImpactedElement(tagId, "hosted-field-focus hosted-field-invalid", "hosted-field-valid");
+          $("#" + tagId + "-help").text("");
+        }
+      },
+      //styling is optional
+      style: {
+        // Styling all inputs
+        "input": {
+          "font-size": "14px",
+          "font-family": "Helvetica Neue,Helvetica,Arial,sans-serif",
+          "line-height": "1.42857143",
+          "color": "#555"
+        },
+
+        // Styling a specific field
+        /*"#ccn": {
+
+                        },*/
+
+        // Styling Hosted Payment Field input state
+        ":focus": {
+          "color": "#555"
+        }
+      },
+      ccnPlaceHolder: "4111222233334444",
+      cvvPlaceHolder: "123",
+      expPlaceHolder: "MM / YY"
+    }
+
+    /* After DOM is loaded, calling bluesnap.hostedPaymentFieldsCreation: function that takes token and bsObj as inputs and initiates Hosted Payment Fields */
+    $(document).ready(function() {
+      bluesnap.hostedPaymentFieldsCreate(bsObj);
+    });
+
+    /* Calling bluesnap.submitCredentials: function that submits card data to
+    BlueSnap and calls input function with card data object if submission was successful */
+    function do_when_clicking_submit_button() {
+      $("#subscribe-analytics").click()
+      $('#error-body').hide();
+      $('#loading-body').show();
+      var loadingDiv = document.getElementById('loading');
+      loadingDiv.style.visibility = 'visible';
+      bluesnap.hostedPaymentFieldsSubmitData(
+        function(callback) {
+          if (null != callback.error) {
+            var errorArray = callback.error;
+            $('#error-body').show();
+            for (i in errorArray) {
+              $('#error-content').text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
+            }
+            $('#invalid-bluesnap-analytic').click()
+            loadingDiv.style.visibility = 'hidden';
+            $('#loading-body').hide();
+          } else {
+            $('#valid-bluesnap-analytic').click()
+            var cardData = callback.cardData;
+            console.log(
+              "Card Type: " +
+              cardData.ccType +
+              " Last 4 Digits: " +
+              cardData.last4Digits +
+              " Issuing Country: " +
+              cardData.issuingCountry +
+              " Is Regulated Card: " +
+              cardData.isRegulatedCard +
+              " Card Sub Type: " +
+              cardData.cardSubType +
+              " Bin Category: " +
+              cardData.binCategory +
+              " Exp: " +
+              cardData.exp +
+              " after that I can call final submit"
+            );
+            data = {}
+            data.token = btoken;
+            data.userId = uid;
+            data.planId = plan_id;
+            data.plan = plan;
+            data.animalIds = animal_ids;
+
+
+            $.ajax({
+              type: "POST",
+              beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+              data: JSON.stringify(data),// now data come in this function
+              contentType: "application/json; charset=utf-8",
+              crossDomain: true,
+              dataType: "json",
+              success: function (data, status, jqXHR) {
+                $("#subscribe-analytics-success").click()
+                $("#payment-form").hide();
+                $("#payment-success").show();
+                loadingDiv.style.visibility = 'hidden';
+                $('#loading-body').hide();
+              },
+
+              error: function (jqXHR, status) {
+                $('#error-body').show();
+                $('#error-content').text(jqXHR.responseJSON.message);
+                $("#subscribe-analytics-error").click()
+                loadingDiv.style.visibility = 'hidden';
+                $('#loading-body').hide();
+              }
+            });
+
+            // This is where you would perform final submission to your server
+          }
+        }
+      );
+    }}
 </script>
 
 </body>
