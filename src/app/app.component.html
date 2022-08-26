@@ -5,6 +5,8 @@
   {{plan == 'FREE_DELIVERY' ? 'Free deliveries' : (plan == 'MEAL_1' ? '1 Meal / Day': '3 Meals / Day')}}
   <br *ngIf="plan != 'FREE_DELIVERY'"/>
   <span *ngIf="plan != 'FREE_DELIVERY'" style="font-size:medium">Bonus: Free Shipping (all dogs)</span>
+  <br *ngIf="trial"/>
+  <span *ngIf="trial" style="font-size:medium">3 day trial</span>
 </div>
 <div id="payment-form"  class="panel panel-default bootstrap-basic">
   <form class="panel-body" *ngIf="!version" id="checkout-form" action="#">
@@ -60,6 +62,7 @@
 
   <div *ngIf="paypal_plan_id && !version" id="paypal-button-container" class="panel-body"></div>
   <div *ngIf="paypal_plan_id" id="paypal-button-container"  class="panel-body"></div>
+  <p style="font-size: x-small; text-align: center" *ngIf="version && paypal_plan_id"> <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
 </div>
 <div id="payment-success" class="successScreen" style="display: none">
   <div class="card">
