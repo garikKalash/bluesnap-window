@@ -102,6 +102,10 @@
             }
           });
         },
+        style: {
+          shape:  'rect',
+          label:  'pay'
+        },
         onApprove: function (data, actions) {
           console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
           pdata = {}
@@ -147,6 +151,11 @@
       }).render('#paypal-button-container');
     } else {
       paypal.Buttons({
+
+        style: {
+        shape:  'rect',
+          label:  'pay'
+        },
         createSubscription: function (data, actions) {
           return actions.subscription.create({
             'plan_id': paypal_plan_id, // Creates the subscription
