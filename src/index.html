@@ -48,54 +48,59 @@
   </style>
 </head>
 <body>
-<div style="background-image: url('/assets/Logo_Treat_Color.png');background-size: 100%;
+  <div style="background-image: url('/assets/Logo_Treat_Color.png');background-size: 100%;
     background-repeat: no-repeat;
     width: 65px;
     height: 72px;
     margin-left: 2%;
     margin-top: 3%;"></div>
-<app-root></app-root>
-<!--BlueSnap Hosted Payment Fields JavaScript file-->
-<script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=AXVSORFJEAMbjbaigM4xalpH8QswW6ayaQMXM3QD_MUV9aZuF1GSZQQk_VhbLYSXuHZkNkHXiHpu-NUk&vault=true&intent=subscription"></script>
-<script>
-  /* Defining helper functions/objects */
-  // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
-  function changeImpactedElement(tagId, removeClass, addClass) {
-    removeClass = removeClass || "";
-    addClass = addClass || "";
-    $("[data-bluesnap=" + tagId + "]")
-      .removeClass(removeClass)
-      .addClass(addClass);
-  }
-  // cardUrl: object that stores card type code (received from BlueSnap) and associated card image URL
-  var cardUrl = {
-    "AMEX": "https://files.readme.io/97e7acc-Amex.png",
-    "DINERS": "https://files.readme.io/8c73810-Diners_Club.png",
-    "DISCOVER": "https://files.readme.io/caea86d-Discover.png",
-    "JCB": "https://files.readme.io/e076aed-JCB.png",
-    "MASTERCARD": "https://files.readme.io/5b7b3de-Mastercard.png",
-    "VISA": "https://files.readme.io/9018c4f-Visa.png"
-  };
-  var queryString = window.location.search
-  var urlParams = new URLSearchParams(queryString);
-  var btoken = urlParams.get('token');
-  var plan_id = urlParams.get('plan_id');
-  var paypal_plan_id = urlParams.get('paypal_plan_id');
-  var uid = urlParams.get('uid');
-  var email = urlParams.get('email');
-  var plan =urlParams.get('plan');
-  var version =urlParams.get('version');
-  var trial =urlParams.get('trial');
-  if(trial){
-    if(trial.toLowerCase() === 'false') trial = null;
-  }
-  var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
-  console.log(animal_ids);
-  if(paypal_plan_id) {
-    if(!version){
+  <app-root></app-root>
+  <!--BlueSnap Hosted Payment Fields JavaScript file-->
+  <script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AbJM516TZ4N9biU0uHh4Q-j_nDfreIJz32f8mI0p6BWkI4tRJ13HS8KJ_9IAKGAs-Rvgmc4Er29zjqYg&vault=true&intent=subscription"></script>
+  <script>
+    /* Defining helper functions/objects */
+    // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
+    function changeImpactedElement(tagId, removeClass, addClass) {
+      removeClass = removeClass || "";
+      addClass = addClass || "";
+      $("[data-bluesnap=" + tagId + "]")
+        .removeClass(removeClass)
+        .addClass(addClass);
+    }
+    // cardUrl: object that stores card type code (received from BlueSnap) and associated card image URL
+    var cardUrl = {
+      "AMEX": "https://files.readme.io/97e7acc-Amex.png",
+      "DINERS": "https://files.readme.io/8c73810-Diners_Club.png",
+      "DISCOVER": "https://files.readme.io/caea86d-Discover.png",
+      "JCB": "https://files.readme.io/e076aed-JCB.png",
+      "MASTERCARD": "https://files.readme.io/5b7b3de-Mastercard.png",
+      "VISA": "https://files.readme.io/9018c4f-Visa.png"
+    };
+    var queryString = window.location.search
+    var urlParams = new URLSearchParams(queryString);
+    var btoken = urlParams.get('token');
+    var plan_id = urlParams.get('plan_id');
+    var paypal_plan_id = urlParams.get('paypal_plan_id');
+    var uid = urlParams.get('uid');
+    var email = urlParams.get('email');
+    var plan =urlParams.get('plan');
+    var version =urlParams.get('version');
+    var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
+    var trial =urlParams.get('trial');
+
+    if(trial){
+      if(trial.toLowerCase() === 'false') trial = null;
+    }
+    console.log(animal_ids);
+    if(paypal_plan_id) {
+      if(!version){
       paypal.Buttons({
+        style: {
+          shape:  'rect',
+          label:  'pay'
+        },
         fundingSource: paypal.FUNDING.PAYPAL,
         createSubscription: function (data, actions) {
           return actions.subscription.create({
@@ -105,9 +110,8 @@
             }
           });
         },
-        style: {
-          shape:  'rect',
-          label:  'pay'
+        onClick: function(data, actions) {
+          $("#click-paypal-button").click()
         },
         onApprove: function (data, actions) {
           console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
@@ -152,68 +156,70 @@
           $('#loading-body').hide();
         }
       }).render('#paypal-button-container');
-    } else {
-      paypal.Buttons({
-
-        style: {
-        shape:  'rect',
-          label:  'pay'
-        },
-        createSubscription: function (data, actions) {
-          return actions.subscription.create({
-            'plan_id': paypal_plan_id, // Creates the subscription
-            'application_context': {
-              'shipping_preference': 'NO_SHIPPING'
-            }
-          });
-        },
-        onApprove: function (data, actions) {
-          console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
-          pdata = {}
-          pdata.token = btoken;
-          pdata.userId = uid;
-          pdata.planId = paypal_plan_id;
-          pdata.plan = plan;
-          pdata.animalIds = animal_ids;
-          pdata.paypalSubId = data.subscriptionID;
-          $('#success-paypal').click()
-          $.ajax({
-            type: "POST",
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader('uid', uid);
-            },
-            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
-            data: JSON.stringify(pdata),// now data come in this function
-            contentType: "application/json; charset=utf-8",
-            crossDomain: true,
-            dataType: "json",
-            success: function (data, status, jqXHR) {
-              $("#payment-form").hide();
-              $("#payment-success").show();
-              loadingDiv.style.visibility = 'hidden';
-              $('#loading-body').hide();
-            },
-            error: function (jqXHR, status) {
-              $('#error-body').show();
-              $('#error-content').text(jqXHR.responseJSON.message);
-              loadingDiv.style.visibility = 'hidden';
-              $('#loading-body').hide();
-            }
-          });
-        },
-        onError: function (err) {
-          // For example, redirect to a specific error page
-          $('#error-body').show();
-          $('#error-content').text(err);
-          loadingDiv.style.visibility = 'hidden';
-          $('#loading-body').hide();
-        }
-      }).render('#paypal-button-container');
+      } else {
+        paypal.Buttons({
+          style: {
+            shape:  'rect',
+            label:  'pay'
+          },
+          createSubscription: function (data, actions) {
+            return actions.subscription.create({
+              'plan_id': paypal_plan_id, // Creates the subscription
+              'application_context': {
+                'shipping_preference': 'NO_SHIPPING'
+              }
+            });
+          },
+          onClick: function (data, actions) {
+            $("#click-paypal-button").click()
+          },
+          onApprove: function (data, actions) {
+            console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
+            pdata = {}
+            pdata.token = btoken;
+            pdata.userId = uid;
+            pdata.planId = paypal_plan_id;
+            pdata.plan = plan;
+            pdata.animalIds = animal_ids;
+            pdata.paypalSubId = data.subscriptionID;
+            $('#success-paypal').click()
+            $.ajax({
+              type: "POST",
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader('uid', uid);
+              },
+              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+              data: JSON.stringify(pdata),// now data come in this function
+              contentType: "application/json; charset=utf-8",
+              crossDomain: true,
+              dataType: "json",
+              success: function (data, status, jqXHR) {
+                $("#payment-form").hide();
+                $("#payment-success").show();
+                loadingDiv.style.visibility = 'hidden';
+                $('#loading-body').hide();
+              },
+              error: function (jqXHR, status) {
+                $('#error-body').show();
+                $('#error-content').text(jqXHR.responseJSON.message);
+                loadingDiv.style.visibility = 'hidden';
+                $('#loading-body').hide();
+              }
+            });
+          },
+          onError: function (err) {
+            // For example, redirect to a specific error page
+            $('#error-body').show();
+            $('#error-content').text(err);
+            loadingDiv.style.visibility = 'hidden';
+            $('#loading-body').hide();
+          }
+        }).render('#paypal-button-container');
+      }
     }
-  }
 
 
-  if(!version){
+    if(!version){
     /* Defining bsObj: object that stores Hosted Payment Fields
     event handlers, styling, placeholder text, etc. */
     var bsObj = {
@@ -326,7 +332,6 @@
             data.animalIds = animal_ids;
             if(trial) data.trial = true;
 
-
             $.ajax({
               type: "POST",
               beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
@@ -357,7 +362,7 @@
         }
       );
     }}
-</script>
+  </script>
 
 </body>
 </html>
