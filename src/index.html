@@ -133,7 +133,7 @@
             beforeSend: function (xhr) {
               xhr.setRequestHeader('uid', uid);
             },
-            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+            url: "http://localhost:8080/rest/payments/paypal/subscribe",
             data: JSON.stringify(pdata),// now data come in this function
             contentType: "application/json; charset=utf-8",
             crossDomain: true,
@@ -194,7 +194,7 @@
               beforeSend: function (xhr) {
                 xhr.setRequestHeader('uid', uid);
               },
-              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+              url: "http://localhost:8080/rest/payments/paypal/subscribe",
               data: JSON.stringify(pdata),// now data come in this function
               contentType: "application/json; charset=utf-8",
               crossDomain: true,
@@ -336,12 +336,14 @@
             data.planId = plan_id;
             data.plan = plan;
             data.animalIds = animal_ids;
+            data.newShop = newShop != null;
+            data.price = price
             if(trial) data.trial = true;
 
             $.ajax({
               type: "POST",
               beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+              url: "http://localhost:8080/rest/payments/subscribe",
               data: JSON.stringify(data),// now data come in this function
               contentType: "application/json; charset=utf-8",
               crossDomain: true,
