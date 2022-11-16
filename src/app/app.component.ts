@@ -17,6 +17,7 @@ export class AppComponent implements OnInit{
   paypal_plan_id = new URLSearchParams(window.location.search).get('paypal_plan_id');
   frequency = new URLSearchParams(window.location.search).get('frequency');
   price = new URLSearchParams(window.location.search).get('price');
+  newShop = new URLSearchParams(window.location.search).get('new-shop');
   version = new URLSearchParams(window.location.search).get('version');
   trial = new URLSearchParams(window.location.search).get('trial');
 
@@ -42,7 +43,8 @@ export class AppComponent implements OnInit{
     }
     this.paymentService.getPlan({uid: this.uid, planId: this.plan == 'FREE_DELIVERY' ? 'FREE_DELIVERY' :  this.plan
         + (this.trial ? '_TRIAL' : '') + '_'
-        + (this.animalIds != null ? this.animalIds.split(',').length : 0)})
+        + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
+          ? '_' + this.price.replace('.', '') : '')})
       .subscribe(res=>{
         let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
         let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];
