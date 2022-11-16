@@ -10,5 +10,5 @@ export const environment = {
     measurementId: "G-15R8F2SJB1"
   },
   production: true,
-  apiUrl:  "http://localhost:8080"
+  apiUrl:  "https://treattestenvironment.uc.r.appspot.com"
 };
