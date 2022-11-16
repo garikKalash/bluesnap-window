@@ -69,13 +69,13 @@ export class AppComponent implements OnInit{
           this.period = 'Weekly';
           if(this.plan == 'FREE_DELIVERY'){
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$1.49 per week") + " X " + multiplyPart + ""
-            this.total = 1.49 ;
+            this.total = this.price != null ? +this.price : 1.49 ;
           } else if(this.plan == 'MEAL_1'){
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$2.79 per week") + " X " + multiplyPart + " X " + animalCount + " animal/s"
-            this.total = 2.79 * animalCount;
+            this.total = (this.price != null ? +this.price : 2.79) * animalCount;
           } else {
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$4.99 per week") + " X " + multiplyPart + " X " + animalCount + " animal/s"
-            this.total = 4.99 * animalCount;
+            this.total = (this.price != null ? +this.price : 4.99) * animalCount;
           }
         } else if(monthId != null && monthId == this.plan_id){
           if(this.customDetails) {
@@ -155,7 +155,7 @@ export class AppComponent implements OnInit{
             this.gifts = (10* animalCount) + ' meals';
           } else {
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$4.99 per week")+" X " + multiplyPart + " X " + animalCount + " animal/s"
-            this.total =  (this.price !== null ? +this.price : 4.99 * 26) * animalCount;
+            this.total =  (this.price !== null ? +this.price : 4.99) * 26 * animalCount;
             this.gifts = animalCount + ' Toy/s';
           }
         } else if(annuallyId != null && annuallyId == this.plan_id) {
@@ -175,17 +175,20 @@ export class AppComponent implements OnInit{
           }
           if(this.plan == 'FREE_DELIVERY'){
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$1.49 per week")+" X " + multiplyPart + ""
-            this.total =  this.price !== null ? +this.price * 12 : 1.49 * 52;
+            this.total =  (this.price !== null ? +this.price : 1.49) * 52;
             this.gifts = animalCount + ' Toy/s'
           } else if(this.plan == 'MEAL_1'){
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$2.79 per week")+" X " + multiplyPart + " X " + animalCount + " animal/s"
-            this.total =  (this.price !== null ? +this.price * 12 : 2.79 * 52) * animalCount;
+            this.total =  (this.price !== null ? +this.price  : 2.79) * 52 * animalCount;
             this.gifts = animalCount + ' Toy/s + ' + animalCount * 5 + ' meals ';
           } else {
             this.detailString = (this.customDetails ? "$" + this.price + " per " + this.frequency : "$4.99 per week")+" X " + multiplyPart + " X " + animalCount + " animal/s"
-            this.total =  (this.price !== null ? +this.price * 12 : 4.99 * 52) * animalCount;
+            this.total =  (this.price !== null ? +this.price  : 4.99) * 52 * animalCount;
             this.gifts = animalCount + ' Toy/s + ' + animalCount * 10 + ' meals ';
           }
+        }
+        if(this.total) {
+          this.total = +this.total.toFixed(2)
         }
 
       });
