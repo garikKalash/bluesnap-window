@@ -71,10 +71,6 @@
   border: 0;
 }
 
-.loading-container{
-  text-align: center;
-}
-
 .loading:not(:required):after {
   content: '';
   display: block;

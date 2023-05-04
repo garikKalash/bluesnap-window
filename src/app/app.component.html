@@ -14,7 +14,7 @@
   <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 2.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
 
   <form class="panel-body" *ngIf="!version" id="checkout-form" action="#">
-    <div class="row">
+    <div class="row" style="margin-bottom: -15px">
       <!--Hosted Field for CC number-->
       <div class="form-group col-md-12">
         <label for="card-number">Card Number</label>
@@ -25,22 +25,41 @@
         </div>
       </div>
       <!--Hosted Field for CC EXP-->
-      <div class="form-group col-xs-7" >
+      <div class="form-group col-xs-7" style="margin-bottom: -15px" >
         <label for="exp-date">Exp. Date</label>
         <div id="exp-analytics" (click)="clickOnExpDate()"></div>
         <div class="form-control" id="exp-date" data-bluesnap="exp"></div>
         <span class="helper-text" id="exp-help"></span>
       </div>
       <!--Hosted Field for CC CVV-->
-      <div class="form-group col-xs-5" >
+      <div class="form-group col-xs-5" style="margin-bottom: -15px">
         <label for="cvv">CVV</label>
         <div id="cvv-analytics" (click)="clickOnCVV()"></div>
         <div class="form-control" id="cvv" data-bluesnap="cvv" (click)="clickOnCVV()"></div>
         <span class="helper-text" id='cvv-help'></span>
       </div>
     </div>
-    <div style="text-align: center; width: 100%">
-      <p *ngIf="gifts" style="margin:0 0 0"><span style="font-weight: bold; font-style: italic">Gift/s:</span> {{gifts}}</p>
+    <div class="row">
+      <div class="form-group col-md-12" style="position: relative; margin-top: 9%" *ngIf="isAnonymous" >
+        <div style="width: 100%;
+    height: 28px;
+    background-color: grey;
+    position: absolute;
+    border-radius: 4px;
+    color: #ffffffc9;
+    padding: 2%;
+    margin-top: 20%;
+    font-size: smaller;" *ngIf="showEmailHint" >
+          <p>For potential customer service support purposes</p>
+
+        </div>
+        <label for="email" style="font-weight: 700">Contact details</label>
+        <input id="email"  [(ngModel)]="enteredEmail" type="email"  style="width: 85%; padding-left: 3%; height: 35px" placeholder="example@email.com">
+        <button mat-icon-button *ngIf="!showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>help</mat-icon></button>
+        <button mat-icon-button *ngIf="showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>close</mat-icon></button>
+      </div>
+    </div>
+    <div style="text-align: center; width: 100%; margin-top: 5%">
       <p style="margin:0 0 0">{{detailString}}</p>
       <p style="margin:0 0 0"><span style="font-weight: bold">Total:</span> ${{total}}</p>
     </div>
@@ -51,6 +70,7 @@
     </div>
 
     <div id="subscribe-analytics" (click)="clickOnSubscribe()"></div>
+    <div id="click-paypal-button" (click)="clickOnPaypalButton()"></div>
     <div id="valid-bluesnap-analytics" (click)="validBluesnap()"></div>
     <div id="success-paypal" (click)="successPaypal()"></div>
     <div id="invalid-bluesnap-analytics" (click)="inValidBluesnap()"></div>
@@ -58,7 +78,6 @@
     <div id="subscribe-analytics-error" (click)="clickOnSubscribeError()"></div>
   </form>
   <div style="text-align: center; width: 100%" *ngIf="version">
-    <p *ngIf="gifts" style="margin:0 0 0"><span style="font-weight: bold; font-style: italic">Gift/s:</span> {{gifts}}</p>
     <p style="margin:0 0 0">{{detailString}}</p>
     <p style="margin:0 0 0"><span style="font-weight: bold">Total:</span> ${{total}}</p>
   </div>
@@ -78,6 +97,5 @@
   <div id="loading" class="loading">
     <span style="margin-left: 15px;">Loading..</span>
   </div>
-  <p style="margin-top: 40px">Please don’t close the window</p>
 </div>
 

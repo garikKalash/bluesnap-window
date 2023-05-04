@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     .panel {
       width: 95%;
@@ -58,7 +59,7 @@
   <!--BlueSnap Hosted Payment Fields JavaScript file-->
   <script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=AXVSORFJEAMbjbaigM4xalpH8QswW6ayaQMXM3QD_MUV9aZuF1GSZQQk_VhbLYSXuHZkNkHXiHpu-NUk&vault=true&intent=subscription"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AbJM516TZ4N9biU0uHh4Q-j_nDfreIJz32f8mI0p6BWkI4tRJ13HS8KJ_9IAKGAs-Rvgmc4Er29zjqYg&vault=true&intent=subscription"></script>
   <script>
     /* Defining helper functions/objects */
     // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
@@ -122,9 +123,9 @@
           pdata.userId = uid;
           pdata.planId = paypal_plan_id;
           pdata.plan = plan;
+          pdata.animalIds = animal_ids;
           pdata.newShop = newShop != null;
           pdata.price = price
-          pdata.animalIds = animal_ids;
           pdata.paypalSubId = data.subscriptionID;
           if(trial) pdata.trial = true;
           $('#success-paypal').click()
@@ -371,6 +372,5 @@
       );
     }}
   </script>
-
 </body>
 </html>
