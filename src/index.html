@@ -92,6 +92,7 @@
     var version =urlParams.get('version');
     var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
     var trial =urlParams.get('trial');
+    var subId = urlParams.get('subId');
 
     if(trial){
       if(trial.toLowerCase() === 'false') trial = null;
@@ -147,7 +148,12 @@
             },
             error: function (jqXHR, status) {
               $('#error-body').show();
-              $('#error-content').text(jqXHR.responseJSON.message);
+              var err = jqXHR.responseJSON.message;
+              if(err.includes('Please contact the issuing bank.')){
+                $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
+              } else {
+                $('#error-content').text(err);
+              }
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
             }
@@ -156,7 +162,11 @@
         onError: function (err) {
           // For example, redirect to a specific error page
           $('#error-body').show();
-          $('#error-content').text(err);
+          if(err.includes('Please contact the issuing bank.')){
+            $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
+          } else {
+            $('#error-content').text(err);
+          }
           loadingDiv.style.visibility = 'hidden';
           $('#loading-body').hide();
         }
@@ -208,7 +218,12 @@
               },
               error: function (jqXHR, status) {
                 $('#error-body').show();
-                $('#error-content').text(jqXHR.responseJSON.message);
+                var err = jqXHR.responseJSON.message;
+                if(err.includes('Please contact the issuing bank.')){
+                  $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
+                } else {
+                  $('#error-content').text(err);
+                }
                 loadingDiv.style.visibility = 'hidden';
                 $('#loading-body').hide();
               }
@@ -217,7 +232,11 @@
           onError: function (err) {
             // For example, redirect to a specific error page
             $('#error-body').show();
-            $('#error-content').text(err);
+            if(err.includes('Please contact the issuing bank.')){
+              $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
+            } else {
+              $('#error-content').text(err);
+            }
             loadingDiv.style.visibility = 'hidden';
             $('#loading-body').hide();
           }
@@ -246,7 +265,16 @@
         onError: function(tagId, errorCode, errorDescription) {
           // Handle a change in validation
           changeImpactedElement(tagId, "hosted-field-valid hosted-field-focus", "hosted-field-invalid");
-          $("#" + tagId + "-help").removeClass('helper-text-green').text(errorCode + " - " + errorDescription);
+          var errorMessage;
+          if(errorDescription === 'invalidExpDate') {
+            errorMessage = 'Enter valid exp date'
+          } else if(errorDescription === 'invalidCvv') {
+            errorMessage = 'Enter valid CVV'
+          } else if(errorDescription === 'invalidCcNumber') {
+            errorMessage = 'Enter valid card number'
+          }
+          $("#" + tagId + "-help").removeClass('helper-text-green').text(errorMessage);
+          $('#loading-body').hide();
         },
         onType: function(tagId, cardType, cardData) {
           console.log('Typeing'+tagId)
@@ -295,82 +323,126 @@
     /* Calling bluesnap.submitCredentials: function that submits card data to
     BlueSnap and calls input function with card data object if submission was successful */
     function do_when_clicking_submit_button() {
-      $("#subscribe-analytics").click()
-      $('#error-body').hide();
-      $('#loading-body').show();
-      var loadingDiv = document.getElementById('loading');
-      loadingDiv.style.visibility = 'visible';
-      bluesnap.hostedPaymentFieldsSubmitData(
-        function(callback) {
-          if (null != callback.error) {
-            var errorArray = callback.error;
-            $('#error-body').show();
-            for (i in errorArray) {
-              $('#error-content').text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
+      if(subId){
+        bluesnap.hostedPaymentFieldsSubmitData(
+          function(callback) {
+            if (null != callback.error) {
+              var errorArray = callback.error;
+              console.log(errorArray)
+            } else {
+              $('#valid-bluesnap-analytic').click()
+              data = {}
+              data.token = btoken;
+              data.userId = uid;
+              data.bluesnapSubId = subId;
+              $.ajax({
+                type: "PUT",
+                beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+                url: "http://localhost:8080/rest/payments/bluesnap/subscribe",
+                data: JSON.stringify(data),// now data come in this function
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+                  loadingDiv.style.visibility = 'hidden';
+                  $('#loading-body').hide();
+                },
+
+                error: function (jqXHR, status) {
+                  console.log(jqXHR.responseJSON.message);
+                  loadingDiv.style.visibility = 'hidden';
+                  $('#loading-body').hide();
+                }
+              });
+
+              // This is where you would perform final submission to your server
             }
-            $('#invalid-bluesnap-analytic').click()
-            loadingDiv.style.visibility = 'hidden';
-            $('#loading-body').hide();
-          } else {
-            $('#valid-bluesnap-analytic').click()
-            var cardData = callback.cardData;
-            console.log(
-              "Card Type: " +
-              cardData.ccType +
-              " Last 4 Digits: " +
-              cardData.last4Digits +
-              " Issuing Country: " +
-              cardData.issuingCountry +
-              " Is Regulated Card: " +
-              cardData.isRegulatedCard +
-              " Card Sub Type: " +
-              cardData.cardSubType +
-              " Bin Category: " +
-              cardData.binCategory +
-              " Exp: " +
-              cardData.exp +
-              " after that I can call final submit"
-            );
-            data = {}
-            data.token = btoken;
-            data.userId = uid;
-            data.planId = plan_id;
-            data.plan = plan;
-            data.animalIds = animal_ids;
-            data.newShop = newShop != null;
-            data.price = price
-            if(trial) data.trial = true;
-
-            $.ajax({
-              type: "POST",
-              beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
-              data: JSON.stringify(data),// now data come in this function
-              contentType: "application/json; charset=utf-8",
-              crossDomain: true,
-              dataType: "json",
-              success: function (data, status, jqXHR) {
-                $("#subscribe-analytics-success").click()
-                $("#payment-form").hide();
-                $("#payment-success").show();
-                loadingDiv.style.visibility = 'hidden';
-                $('#loading-body').hide();
-              },
-
-              error: function (jqXHR, status) {
-                $('#error-body').show();
-                $('#error-content').text(jqXHR.responseJSON.message);
-                $("#subscribe-analytics-error").click()
-                loadingDiv.style.visibility = 'hidden';
-                $('#loading-body').hide();
-              }
-            });
-
-            // This is where you would perform final submission to your server
           }
+        );
+      } else {
+          $("#subscribe-analytics").click()
+          $('#error-body').hide();
+          $('#loading-body').show();
+          var loadingDiv = document.getElementById('loading');
+          loadingDiv.style.visibility = 'visible';
+          bluesnap.hostedPaymentFieldsSubmitData(
+            function(callback) {
+              if (null != callback.error) {
+                var errorArray = callback.error;
+                $('#error-body').show();
+                for (i in errorArray) {
+                  $('#error-content').text(errorArray[i].errorCode + " - " + errorArray[i].errorDescription);
+                }
+                $('#invalid-bluesnap-analytic').click()
+                loadingDiv.style.visibility = 'hidden';
+                $('#loading-body').hide();
+              } else {
+                $('#valid-bluesnap-analytic').click()
+                var cardData = callback.cardData;
+                console.log(
+                  "Card Type: " +
+                  cardData.ccType +
+                  " Last 4 Digits: " +
+                  cardData.last4Digits +
+                  " Issuing Country: " +
+                  cardData.issuingCountry +
+                  " Is Regulated Card: " +
+                  cardData.isRegulatedCard +
+                  " Card Sub Type: " +
+                  cardData.cardSubType +
+                  " Bin Category: " +
+                  cardData.binCategory +
+                  " Exp: " +
+                  cardData.exp +
+                  " after that I can call final submit"
+                );
+                data = {}
+                data.token = btoken;
+                data.userId = uid;
+                data.planId = plan_id;
+                data.plan = plan;
+                data.animalIds = animal_ids;
+                data.newShop = newShop != null;
+                data.price = price
+                if(trial) data.trial = true;
+
+                $.ajax({
+                  type: "POST",
+                  beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+                  url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+                  data: JSON.stringify(data),// now data come in this function
+                  contentType: "application/json; charset=utf-8",
+                  crossDomain: true,
+                  dataType: "json",
+                  success: function (data, status, jqXHR) {
+                    $("#subscribe-analytics-success").click()
+                    $("#payment-form").hide();
+                    $("#payment-success").show();
+                    loadingDiv.style.visibility = 'hidden';
+                    $('#loading-body').hide();
+                  },
+
+                  error: function (jqXHR, status) {
+                    $('#error-body').show();
+                    var err = jqXHR.responseJSON.message;
+                    if(err.includes('Please contact the issuing bank.')){
+                      $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
+                    } else {
+                      $('#error-content').text(err);
+                    }
+                    $("#subscribe-analytics-error").click()
+                    loadingDiv.style.visibility = 'hidden';
+                    $('#loading-body').hide();
+                  }
+                });
+
+                // This is where you would perform final submission to your server
+              }
+            }
+          );
         }
-      );
-    }}
+      }
+    }
   </script>
 </body>
 </html>

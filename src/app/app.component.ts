@@ -24,13 +24,14 @@ export class AppComponent implements OnInit{
   version = new URLSearchParams(window.location.search).get('version');
   trial = new URLSearchParams(window.location.search).get('trial');
 
+  update = new URLSearchParams(window.location.search).get('update')
+  subscriptionId = new URLSearchParams(window.location.search).get('subId')
+
   detailString: string | undefined;
   total: number | undefined;
   period: string | undefined;
   gifts: string | undefined;
   showEmailHint: boolean = false;
-
-  start_time: Date = new Date();
 
   customDetails = (this.price !== null && this.frequency !== null) && (this.price !== '' && this.frequency !== '');
 
@@ -50,12 +51,13 @@ export class AppComponent implements OnInit{
         this.isAnonymous = u.anon;
       });
     }
-    this.paymentService.getPlan({uid: this.uid, planId: this.plan == 'FREE_DELIVERY'  ? 'FREE_DELIVERY' + (this.newShop != null && this.price != null
-        ? '_' + this.price.replace('.', '') : '') :  this.plan
-        + (this.trial ? '_TRIAL' : '') + '_'
-        + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
-          ? '_' + this.price.replace('.', '') : '')})
-      .subscribe(res=>{
+    if(this.plan_id){
+      this.paymentService.getPlan({uid: this.uid, planId: this.plan == 'FREE_DELIVERY'  ? 'FREE_DELIVERY' + (this.newShop != null && this.price != null
+          ? '_' + this.price.replace('.', '') : '') :  this.plan
+          + (this.trial ? '_TRIAL' : '') + '_'
+          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
+            ? '_' + this.price.replace('.', '') : '')})
+        .subscribe(res=>{
         let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
         let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];
         let ev6monthId = res.planPeriodsWithPlanIds['EVERY_6_MONTHS'];
@@ -403,6 +405,7 @@ export class AppComponent implements OnInit{
         }
 
       });
+    }
   }
 
   clickOnCard(){
