@@ -23,6 +23,9 @@ import { UpdatePlanComponent } from './components/update-plan/update-plan.compon
     AppComponent,
     UpdatePlanComponent
   ],
+  exports: [
+    UpdatePlanComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
