@@ -20,11 +20,8 @@ import { UpdatePlanComponent } from './components/update-plan/update-plan.compon
 
 @NgModule({
   declarations: [
-    AppComponent,
-    UpdatePlanComponent
-  ],
-  exports: [
-    UpdatePlanComponent
+    UpdatePlanComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,
