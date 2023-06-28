@@ -25,6 +25,6 @@ export class PaymentService {
         uid: uid
       })
     };
-    return this.httpClient.get<PaymentPlan>(`http://localhost:8080/rest/payments/bluesnap/active-plan/${planId}`, httpOptions);
+    return this.httpClient.get<PaymentPlan>(`https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`, httpOptions);
   }
 }

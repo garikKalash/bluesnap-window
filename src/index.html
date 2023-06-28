@@ -280,7 +280,7 @@
           console.log('Typeing'+tagId)
           // get card type from cardType and display card image
           $("#card-logo > img").attr("src", cardUrl[cardType]);
-          if (null != cardData) {
+          if (null != cardData && tagId !== 'ccn') {
             $("#" + tagId + "-help").addClass('helper-text-green').text(JSON.stringify(cardData));
           }
         },
@@ -338,7 +338,7 @@
               $.ajax({
                 type: "PUT",
                 beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-                url: "http://localhost:8080/rest/payments/bluesnap/subscribe",
+                url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe",
                 data: JSON.stringify(data),// now data come in this function
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
