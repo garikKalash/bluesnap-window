@@ -344,12 +344,16 @@
                 crossDomain: true,
                 dataType: "json",
                 success: function (data, status, jqXHR) {
+                  $("#update-payment-form").hide();
+                  $("#payment-update-success").show();
                   loadingDiv.style.visibility = 'hidden';
                   $('#loading-body').hide();
                 },
 
                 error: function (jqXHR, status) {
                   console.log(jqXHR.responseJSON.message);
+                  $('#error-body').show();
+                  $('#error-content').text('Something went wrong in update payment source');
                   loadingDiv.style.visibility = 'hidden';
                   $('#loading-body').hide();
                 }
