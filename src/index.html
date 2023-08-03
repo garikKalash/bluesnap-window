@@ -342,19 +342,18 @@
                 data: JSON.stringify(data),// now data come in this function
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
-                dataType: "json",
                 success: function (data, status, jqXHR) {
+                  console.log('success')
                   $("#update-payment-form").hide();
                   $("#payment-update-success").show();
-                  loadingDiv.style.visibility = 'hidden';
                   $('#loading-body').hide();
+                  $('#error-body').hide();
                 },
 
                 error: function (jqXHR, status) {
-                  console.log(jqXHR.responseJSON.message);
+                  console.log(jqXHR)
                   $('#error-body').show();
                   $('#error-content').text('Something went wrong in update payment source');
-                  loadingDiv.style.visibility = 'hidden';
                   $('#loading-body').hide();
                 }
               });
