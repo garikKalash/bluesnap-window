@@ -109,7 +109,7 @@
         createSubscription: function (data, actions) {
           return actions.subscription.create({
             'plan_id': paypal_plan_id, // Creates the subscription
-            'custom_id': uid,
+
             'application_context': {
               'shipping_preference': 'NO_SHIPPING'
             }
@@ -181,7 +181,7 @@
           createSubscription: function (data, actions) {
             return actions.subscription.create({
               'plan_id': paypal_plan_id, // Creates the subscription
-              'custom_id': uid,
+
               'application_context': {
                 'shipping_preference': 'NO_SHIPPING'
               }
