@@ -8,7 +8,7 @@
   {{plan == 'FREE_DELIVERY' ? 'Unlimited deliveries' : (plan == 'MEAL_1' ? (version && trial ? '3 Day Trial: 1 Meal / Day':'1 Meal / Day'): '3 Meals / Day')}}
   <br *ngIf="plan != 'FREE_DELIVERY'"/>
   <p *ngIf="plan != null && plan != 'FREE_DELIVERY' && !plan.includes('NO_SHIPPING')" style="font-size:medium; margin: 0 0 0;">Bonus: Unlimited deliveries (all dogs)</p>
-  <p *ngIf="bonusDetails" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p>
+  <p *ngIf="rolls" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p></div>
 </div>
 <div id="payment-form"  class="panel panel-default bootstrap-basic">
   <div *ngIf="paypal_plan_id && !version" id="paypal-button-container" class="panel-body"></div>

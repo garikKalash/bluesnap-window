@@ -27,6 +27,9 @@ export class AppComponent implements OnInit{
   update = new URLSearchParams(window.location.search).get('update')
   subscriptionId = new URLSearchParams(window.location.search).get('subId')
 
+  rolls = new URLSearchParams(window.location.search).get('rolls_count');
+  bonusDetails = '1-time gift: 90 rolls';
+
   detailString: string | undefined;
   total: number | undefined;
   period: string | undefined;
@@ -34,13 +37,18 @@ export class AppComponent implements OnInit{
   showEmailHint: boolean = false;
 
   customDetails = (this.price !== null && this.frequency !== null) && (this.price !== '' && this.frequency !== '');
-  bonusDetails = '1-time gift: 90 rolls';
 
   constructor(private paymentService: PaymentService,
               private userService: UserService,
               private analytics: AngularFireAnalytics) {
     if(this.trial){
       if(this.trial.toLowerCase() === 'false') this.trial = null;
+    }
+
+    if(this.rolls === null || this.rolls === undefined || this.rolls === ''){
+      this.rolls = null;
+    } else {
+      this.bonusDetails = '1-time gift: '+this.rolls+' rolls';
     }
   }
 
