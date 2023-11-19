@@ -61,11 +61,20 @@ export class AppComponent implements OnInit{
       });
     }
     if(this.plan_id){
-      this.paymentService.getPlan({uid: this.uid, planId: this.plan == 'FREE_DELIVERY'  ? 'FREE_DELIVERY' + (this.newShop != null && this.price != null
-          ? '_' + this.price.replace('.', '') : '') :  this.plan
+      let planId = '';
+      if(this.plan == 'FREE_DELIVERY') {
+        planId = 'FREE_DELIVERY' +  '_' + (this.newShop != null && this.price != null
+          ? '_' + this.price.replace('.', '') : '');
+      } else if(this.plan != null && this.plan.includes('SHARED')){
+        planId = this.plan + '_0' +  (this.price != null
+          ? '_' + this.price.replace('.', '') : '');
+      } else {
+        planId = this.plan
           + (this.trial ? '_TRIAL' : '') + '_'
           + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
-            ? '_' + this.price.replace('.', '') : '')})
+            ? '_' + this.price.replace('.', '') : '');
+      }
+      this.paymentService.getPlan({uid: this.uid, planId: planId})
         .subscribe(res=>{
         let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
         let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];
@@ -123,6 +132,12 @@ export class AppComponent implements OnInit{
           } else if(this.plan == 'MEAL_1'){
             this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
             this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier * animalCount;
+          } else if(this.plan == 'MEAL_1_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_3_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
           } else {
             this.detailString = (this.customDetails ? "$" + this.price  : "$4.99") + " X " + multiplyPart
             this.total = (this.price !== null && this.price !== '' ? +this.price  :  4.99) * totalMultiplier  * animalCount;
@@ -237,11 +252,18 @@ export class AppComponent implements OnInit{
           }
           this.total = +this.total.toFixed(2)
         } else if(this.price != null){
-          this.paymentService.getPlan({uid: this.uid, planId: this.plan == 'FREE_DELIVERY'  ? 'FREE_DELIVERY'
-              +  '_' + this.price.replace('.', '') :  this.plan
-              + (this.trial ? '_TRIAL' : '') + '_'
+          let planId = '';
+          if(this.plan == 'FREE_DELIVERY') {
+            planId = 'FREE_DELIVERY' +  '_' + this.price.replace('.', '');
+          } else if(this.plan != null && this.plan.includes('SHARED')){
+            planId = this.plan + '_0' +  '_' + this.price.replace('.', '');
+          } else {
+            planId = this.plan + (this.trial ? '_TRIAL' : '') + '_'
               + (this.animalIds != null ? this.animalIds.split(',').length : 0)
-              +  '_' + this.price.replace('.', '')})
+              +  '_' + this.price.replace('.', '');
+          }
+
+          this.paymentService.getPlan({uid: this.uid, planId: planId })
             .subscribe(res=>{
               let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
               let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];
@@ -299,6 +321,12 @@ export class AppComponent implements OnInit{
                 } else if(this.plan == 'MEAL_1'){
                   this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
                   this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier * animalCount;
+                } else if(this.plan == 'MEAL_1_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_3_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
                 } else {
                   this.detailString = (this.customDetails ? "$" + this.price  : "$4.99") + " X " + multiplyPart
                   this.total = (this.price !== null && this.price !== '' ? +this.price  :  4.99) * totalMultiplier  * animalCount;
