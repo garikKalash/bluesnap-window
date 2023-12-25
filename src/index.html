@@ -57,10 +57,202 @@
     margin-top: 3%;"></div>
   <app-root></app-root>
   <!--BlueSnap Hosted Payment Fields JavaScript file-->
+
   <script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=AbJM516TZ4N9biU0uHh4Q-j_nDfreIJz32f8mI0p6BWkI4tRJ13HS8KJ_9IAKGAs-Rvgmc4Er29zjqYg&vault=true&intent=subscription"></script>
+
+  <script src="https://www.paypal.com/sdk/js?client-id=AXVSORFJEAMbjbaigM4xalpH8QswW6ayaQMXM3QD_MUV9aZuF1GSZQQk_VhbLYSXuHZkNkHXiHpu-NUk&vault=true&intent=subscription"></script>
   <script>
+
+    function fetchNewTokenAndReload(err) {
+      // Make a GET request to the endpoint with 'uid' in the headers
+      fetch('https://treattestenvironment.uc.r.appspot.com/rest/payments/session', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'uid': uid // Add the 'uid' parameter to the headers
+        },
+      })
+        .then(response => {
+          // Check if the response is successful
+          if (!response.ok) {
+            throw new Error(`Failed to fetch token: ${response.status} ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Extract the token from the response
+          const newToken = data.token; // Assuming 'url' contains the token
+          if (!newToken) {
+            throw new Error('Token not found in the response.');
+          }
+
+          // Update the URL with the new token
+          const url = new URL(window.location.href);
+          url.searchParams.set('token', newToken);
+          if(err !== undefined){
+            if(url.searchParams.has('error')) {
+              url.searchParams.set('error', err)
+            } else {
+              url.searchParams.append('error', err)
+            }
+          }
+          window.location.href = url.toString(); // Reload the page with the updated URL
+        })
+        .catch(error => {
+          console.error('Error fetching new token:', error);
+        });
+    }
+
+    function processPayment(paymentData) {
+      var paymentToken = b64EncodeUnicode(JSON.stringify(paymentData));
+      console.log(paymentToken)
+      console.log(paymentToken)
+
+      // @todo pass paymentToken to your gateway to process payment
+      data = {}
+      data.googlePayToken = paymentToken;
+      data.userId = uid;
+      data.planId = plan_id;
+      data.plan = plan;
+      data.animalIds = animal_ids;
+      data.newShop = newShop != null;
+      data.price = price
+      if(trial) data.trial = true;
+      $('#loading-body').show();
+
+      $.ajax({
+        type: "POST",
+        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+        url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+        data: JSON.stringify(data),// now data come in this function
+        contentType: "application/json; charset=utf-8",
+        crossDomain: true,
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+          $("#payment-form").hide();
+          $("#payment-success").show();
+          $('#loading-body').hide();
+          $('#error-body').hide();
+          $('#update-payment-form').hide();
+        },
+
+        error: function (jqXHR, status) {
+          $("#payment-form").hide();
+          $("#payment-success").hide();
+          $('#loading-body').hide();
+          $('#error-body').show();
+          $('#update-payment-form').hide();
+        }
+      });
+    }
+
+    function b64EncodeUnicode(str) {
+      // first we use encodeURIComponent to get percent-encoded UTF-8,
+      // then we convert the percent encodings into raw bytes which
+      // can be fed into btoa.
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        }));
+    }
+    const baseRequest = {
+      apiVersion: 2,
+      apiVersionMinor: 0
+    };
+    const tokenizationSpecification = {
+      type: 'PAYMENT_GATEWAY',
+      parameters: {
+        'gateway': 'bluesnap',
+        'gatewayMerchantId': '1007233'
+      }
+    };
+    var paymentsClient;
+    function setupGPay() {
+      if(!showGPay) return;
+      paymentsClient = new google.payments.api.PaymentsClient({environment: 'TEST'});
+      const allowedCardNetworks = ["AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA"];
+      const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+      const baseCardPaymentMethod = {
+        type: 'CARD',
+        parameters: {
+          allowedAuthMethods: allowedCardAuthMethods,
+          allowedCardNetworks: allowedCardNetworks
+        }
+      };
+      const cardPaymentMethod = Object.assign(
+        {tokenizationSpecification: tokenizationSpecification},
+        baseCardPaymentMethod
+      );
+      document.addEventListener('DOMContentLoaded', function() {
+        $.ajax({
+          type: "GET",
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader('uid', uid);
+          },
+          url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/" +plan_id,
+          crossDomain: true,
+          dataType: "json",
+          success: function (data, status, jqXHR) {
+            console.log('data ' + data)
+            console.log('status ' + status)
+            const isReadyToPayRequest = Object.assign({}, baseRequest);
+            isReadyToPayRequest.allowedPaymentMethods = [cardPaymentMethod];
+            isReadyToPayRequest.transactionInfo = {
+              totalPriceStatus: 'FINAL',
+              totalPrice: data.amount + '',
+              currencyCode: 'USD',
+              countryCode: 'US'
+            };
+            paymentsClient.isReadyToPay(isReadyToPayRequest)
+              .then(function(response) {
+                if (response.result) {
+                  const button =
+                    paymentsClient.createButton({
+                      buttonColor: 'white',
+                      buttonType: 'pay',
+                      buttonSizeMode: 'fill',
+                      onClick: () => {
+                        paymentsClient.loadPaymentData(isReadyToPayRequest)
+                          .then(function(paymentData) {
+                            // handle the response
+                            processPayment(paymentData);
+                          })
+                          .catch(function(err) {
+                            // show error in developer console for debugging
+                            console.log(err);
+                            $("#payment-form").show();
+                            $("#payment-success").hide();
+                            $('#loading-body').hide();
+                            $('#error-body').hide();
+                            $('#update-payment-form').hide();
+                          });
+                      },
+                      allowedPaymentMethods: [cardPaymentMethod]}); // same payment methods as for the loadPaymentData() API call
+                  console.log('gpay init ')
+                  document.getElementById('gpay-container').appendChild(button);
+                }
+              })
+              .catch(function(err) {
+                // show error in developer console for debugging
+                console.error(err);
+                $("#payment-form").hide();
+                $("#payment-success").show();
+                $('#loading-body').hide();
+                $('#error-body').hide();
+                $('#update-payment-form').hide();
+              });
+          },
+          error: function (jqXHR, status) {
+            console.log('xhr ' + jqXHR)
+            console.log('status ' + status)
+          }
+        });
+
+
+      });
+    }
+
     /* Defining helper functions/objects */
     // changeImpactedElement: function that removes the provided class(es) and adds the provided class(es) to Hosted Payment Fields element
     function changeImpactedElement(tagId, removeClass, addClass) {
@@ -93,6 +285,11 @@
     var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
     var trial =urlParams.get('trial');
     var subId = urlParams.get('subId');
+    var paymentAB = urlParams.get('store_type');
+    var showGPay = false;
+    if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'GPAY') {
+      showGPay = true;
+    }
 
     if(trial){
       if(trial.toLowerCase() === 'false') trial = null;
@@ -151,10 +348,10 @@
               $('#error-body').show();
               var err = jqXHR.responseJSON.message;
               if(err.includes('Please contact the issuing bank.')){
-                $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-              } else {
-                $('#error-content').text(err);
+                err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
               }
+              $('#error-content').text(err);
+              fetchNewTokenAndReload(err);
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
             }
@@ -164,10 +361,10 @@
           // For example, redirect to a specific error page
           $('#error-body').show();
           if(err.includes('Please contact the issuing bank.')){
-            $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-          } else {
-            $('#error-content').text(err);
+            err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
           }
+          $('#error-content').text(err);
+          fetchNewTokenAndReload(err)
           loadingDiv.style.visibility = 'hidden';
           $('#loading-body').hide();
         }
@@ -222,10 +419,10 @@
                 $('#error-body').show();
                 var err = jqXHR.responseJSON.message;
                 if(err.includes('Please contact the issuing bank.')){
-                  $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-                } else {
-                  $('#error-content').text(err);
+                  err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
                 }
+                $('#error-content').text(err);
+                fetchNewTokenAndReload(err);
                 loadingDiv.style.visibility = 'hidden';
                 $('#loading-body').hide();
               }
@@ -235,10 +432,11 @@
             // For example, redirect to a specific error page
             $('#error-body').show();
             if(err.includes('Please contact the issuing bank.')){
-              $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-            } else {
-              $('#error-content').text(err);
+              err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
             }
+              $('#error-content').text(err);
+             fetchNewTokenAndReload(err);
+
             loadingDiv.style.visibility = 'hidden';
             $('#loading-body').hide();
           }
@@ -431,10 +629,11 @@
                     $('#error-body').show();
                     var err = jqXHR.responseJSON.message;
                     if(err.includes('Please contact the issuing bank.')){
-                      $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-                    } else {
-                      $('#error-content').text(err);
+                      err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
                     }
+
+                    $('#error-content').text(err);
+                    fetchNewTokenAndReload(err);
                     $("#subscribe-analytics-error").click()
                     loadingDiv.style.visibility = 'hidden';
                     $('#loading-body').hide();
@@ -449,5 +648,6 @@
       }
     }
   </script>
+  <script src="https://pay.google.com/gp/p/js/pay.js" onload="setupGPay()"></script>
 </body>
 </html>

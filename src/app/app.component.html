@@ -1,15 +1,28 @@
 <app-update-plan *ngIf="subscriptionId"></app-update-plan>
 
-<div *ngIf="!subscriptionId">
+<div *ngIf="expired" class="alert alert-danger" style="margin-top: 15%; text-align: center">
+  <p>Session expired. Please go back to the app and try again.</p>
+</div>
+
+
+<div *ngIf="!subscriptionId && !expired">
 <div id="error-body" class="alert alert-danger" style="display: none">
   <p id="error-content">Oops payment isn't completed</p>
+</div>
+<div id="error-body-from-url" class="alert alert-danger" *ngIf="errorDetails">
+  <p id="error-body-from-url-content">{{errorDetails}}</p>
 </div>
 <div style="width: 100%; text-align: center; font-weight: bold;font-size: x-large;">
   <span *ngIf="plan != null && !plan.includes('SHARED')">{{plan == 'FREE_DELIVERY' ? 'Unlimited deliveries' : (plan == 'MEAL_1' ? (version && trial ? '3 Day Trial: 1 Meal / Day':'1 Meal / Day'): '3 Meals / Day')}}</span>
   <p *ngIf="plan != null && plan.includes('SHARED')">
     Shared Meals
     <br/>
-    <span style="font-size: smaller;">{{plan != null && plan.includes('MEAL_1') ? '2440 kibbles week (7 meals)' : '7320 kibbles week (21 meals)'}}</span>
+    <span style="font-size: smaller;">{{plan != null && plan.includes('MEAL_1_') ? '2440 kibbles week (7 meals)' :
+      plan != null && plan.includes('MEAL_3_') ? '7320 kibbles week (21 meals)' :
+      plan != null && plan.includes('MEAL_6') ? '14640 kibbles week (42 meals)' :
+      plan != null && plan.includes('MEAL_9') ? '21960 kibbles week (63 meals)' :
+        '29280 kibbles week (84 meals)'
+      }}</span>
     <br/>
     <span style="font-size: xx-small;">* kibbles are passing daily</span>
   </p>
@@ -18,8 +31,10 @@
   <p *ngIf="rolls" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p>
 </div>
 <div id="payment-form"  class="panel panel-default bootstrap-basic">
-  <div *ngIf="paypal_plan_id && !version" id="paypal-button-container" class="panel-body"></div>
-  <div *ngIf="paypal_plan_id && version" id="paypal-button-container"  class="panel-body"></div>
+  <div *ngIf="paypal_plan_id" id="paypal-button-container" class="panel-body"></div>
+  <div style="width: 82%;
+    margin-left: 9%;
+    margin-top: -8%; height: 40px" *ngIf="true" id="gpay-container"></div>
   <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 2.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
   <p *ngIf="paypal_plan_id && !version" style="display: inline-block; float: left; margin-left: 1%; margin-right: 1%">OR</p>
   <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 2.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
@@ -63,10 +78,9 @@
     margin-top: 20%;
     font-size: smaller;" *ngIf="showEmailHint" >
           <p>For potential customer service support purposes</p>
-
         </div>
         <label for="email" style="font-weight: 700">Contact details</label>
-        <input id="email"  [(ngModel)]="enteredEmail" type="email"  style="width: 85%; padding-left: 3%; height: 35px" placeholder="example@email.com">
+        <input id="email"  [(ngModel)]="enteredEmail" type="email"  [ngModelOptions]="{standalone: true}" style="width: 85%; padding-left: 3%; height: 35px" placeholder="example@email.com">
         <button mat-icon-button *ngIf="!showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>help</mat-icon></button>
         <button mat-icon-button *ngIf="showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>close</mat-icon></button>
       </div>
@@ -80,7 +94,6 @@
       <br/>
       <p style="font-size: x-small">Cancel anytime  <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
     </div>
-
     <div id="subscribe-analytics" (click)="clickOnSubscribe()"></div>
     <div id="click-paypal-button" (click)="clickOnPaypalButton()"></div>
     <div id="valid-bluesnap-analytics" (click)="validBluesnap()"></div>
@@ -95,6 +108,7 @@
   </div>
   <p style="font-size: x-small; text-align: center" *ngIf="version && paypal_plan_id"> <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
 </div>
+  <div *ngIf="!expired" style="text-align: center;width: 100%;">Session expires: {{ expireTimeInSec }} s</div>
 <div id="payment-success" class="successScreen" style="display: none">
   <div class="card">
     <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">

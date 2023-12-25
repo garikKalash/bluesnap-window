@@ -20,12 +20,13 @@ export class AppComponent implements OnInit{
   paypal_plan_id = new URLSearchParams(window.location.search).get('paypal_plan_id');
   frequency = new URLSearchParams(window.location.search).get('frequency');
   price = new URLSearchParams(window.location.search).get('price');
-  newShop = new URLSearchParams(window.location.search).get('new-shop');
   version = new URLSearchParams(window.location.search).get('version');
+  paymentAB = new URLSearchParams(window.location.search).get('store_type');
   trial = new URLSearchParams(window.location.search).get('trial');
 
   update = new URLSearchParams(window.location.search).get('update')
   subscriptionId = new URLSearchParams(window.location.search).get('subId')
+  errorDetails = new URLSearchParams(window.location.search).get('error')
 
   rolls = new URLSearchParams(window.location.search).get('rolls_count');
   bonusDetails = '1-time gift: 90 rolls';
@@ -35,6 +36,12 @@ export class AppComponent implements OnInit{
   period: string | undefined;
   gifts: string | undefined;
   showEmailHint: boolean = false;
+  showGPay: boolean  = false;
+
+  expireTimeInSec: number = 0.0;
+  now: Date | undefined = new Date();
+  timer: any;
+  expired: boolean = false;
 
   customDetails = (this.price !== null && this.frequency !== null) && (this.price !== '' && this.frequency !== '');
 
@@ -50,28 +57,61 @@ export class AppComponent implements OnInit{
     } else {
       this.bonusDetails = '1-time gift: '+this.rolls+' rolls';
     }
+    if(this.paymentAB !== null && this.paymentAB !== undefined) {
+      this.showGPay = this.paymentAB === 'GPAY';
+    }
+  }
+
+  startTimer(): void {
+    this.timer = setInterval(() => {
+      if (this.expireTimeInSec > 0) {
+        this.expireTimeInSec--;
+      } else {
+        this.expired = true;
+        clearInterval(this.timer);
+      }
+    }, 1000); // Update every second
   }
 
   ngOnInit() {
+    if(this.errorDetails){
+      this.errorDetails = decodeURIComponent(this.errorDetails);
+    }
     if (this.uid) {
+      this.paymentService.getServerTime().subscribe(d=>{
+        // @ts-ignore
+        this.paymentService.getPaymentMetadata(this.uid).subscribe(b => {
+          // @ts-ignore
+          this.expireTimeInSec = Math.floor(new Date(b.expiresAt).getTime() - new Date(d.now).getTime()) / 1000
+          if(this.expireTimeInSec <= 0) {
+            this.expired = true;
+          }
+          this.startTimer()
+        }, error => {
+          this.expired = true;
+        });
+      })
       this.analytics.logEvent('payment_page_landing', {"uid": this.uid, "plan": this.plan, "plan_id": this.plan_id});
       this.userService.getUser(this.uid).subscribe(u=>{
         // @ts-ignore
         this.isAnonymous = u.anon;
       });
+
     }
     if(this.plan_id){
+      console.log('ng plan ' + this.plan_id)
       let planId = '';
       if(this.plan == 'FREE_DELIVERY') {
-        planId = 'FREE_DELIVERY' +  '_' + (this.newShop != null && this.price != null
+        planId = 'FREE_DELIVERY' +  (this.price != null
           ? '_' + this.price.replace('.', '') : '');
+        console.log('ng plan ' + this.plan)
       } else if(this.plan != null && this.plan.includes('SHARED')){
         planId = this.plan + '_0' +  (this.price != null
           ? '_' + this.price.replace('.', '') : '');
       } else {
         planId = this.plan
           + (this.trial ? '_TRIAL' : '') + '_'
-          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
+          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.price != null
             ? '_' + this.price.replace('.', '') : '');
       }
       this.paymentService.getPlan({uid: this.uid, planId: planId})
@@ -136,6 +176,15 @@ export class AppComponent implements OnInit{
             this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
             this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
           } else if(this.plan == 'MEAL_3_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_6_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_9_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_12_SHARED'){
             this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
             this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
           } else {
@@ -245,11 +294,6 @@ export class AppComponent implements OnInit{
           }
         }
         if(this.total) {
-          if (this.newShop != null && this.newShop.trim() != '' && this.plan != 'FREE_DELIVERY'){
-            if(animalCount > 1) {
-              this.total = this.total / animalCount;
-            }
-          }
           this.total = +this.total.toFixed(2)
         } else if(this.price != null){
           let planId = '';
@@ -325,6 +369,15 @@ export class AppComponent implements OnInit{
                   this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
                   this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
                 } else if(this.plan == 'MEAL_3_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_6_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_9_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_12_SHARED'){
                   this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
                   this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
                 } else {
@@ -432,11 +485,6 @@ export class AppComponent implements OnInit{
                 }
               }
               if(this.total) {
-                if (this.newShop != null && this.newShop.trim() != '' && this.plan != 'FREE_DELIVERY'){
-                  if(animalCount > 1) {
-                    this.total = this.total / animalCount;
-                  }
-                }
                 this.total = +this.total.toFixed(2)
               }});
         }
