@@ -178,7 +178,12 @@
                         })
                         .catch(function(err) {
                           // show error in developer console for debugging
-                          console.error(err);
+                          alert(err);
+                          $("#payment-form").hide();
+                          $("#payment-success").show();
+                          $('#loading-body').hide();
+                          $('#error-body').hide();
+                          $('#update-payment-form').hide();
                         });
                     },
                     allowedPaymentMethods: [cardPaymentMethod]}); // same payment methods as for the loadPaymentData() API call
