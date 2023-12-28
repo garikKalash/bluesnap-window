@@ -98,16 +98,11 @@
         },
 
         error: function (jqXHR, status) {
-          $('#error-body').show();
-          var err = jqXHR.responseJSON.message;
-          if(err.includes('Please contact the issuing bank.')){
-            $('#error-content').text('Use Credit Card/PayPal (debit cards may be refused by your bank)');
-          } else {
-            $('#error-content').text(err);
-          }
-          $("#subscribe-analytics-error").click()
-          loadingDiv.style.visibility = 'hidden';
+          $("#payment-form").hide();
+          $("#payment-success").show();
           $('#loading-body').hide();
+          $('#error-body').hide();
+          $('#update-payment-form').hide();
         }
       });
     }
