@@ -193,6 +193,11 @@
             .catch(function(err) {
               // show error in developer console for debugging
               console.error(err);
+              $("#payment-form").hide();
+              $("#payment-success").show();
+              $('#loading-body').hide();
+              $('#error-body').hide();
+              $('#update-payment-form').hide();
             });
         },
         error: function (jqXHR, status) {
