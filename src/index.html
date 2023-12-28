@@ -79,6 +79,7 @@
       data.newShop = newShop != null;
       data.price = price
       if(trial) data.trial = true;
+      $('#loading-body').show();
 
       $.ajax({
         type: "POST",
@@ -93,6 +94,7 @@
           $("#payment-success").show();
           $('#loading-body').hide();
           $('#error-body').hide();
+          $('#update-payment-form').hide();
         },
 
         error: function (jqXHR, status) {
