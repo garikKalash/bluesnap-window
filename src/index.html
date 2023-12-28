@@ -57,10 +57,7 @@
     margin-top: 3%;"></div>
   <app-root></app-root>
   <!--BlueSnap Hosted Payment Fields JavaScript file-->
-  <script
-    src="https://pay.google.com/gp/p/js/pay.js"
-    onload="console.log('TODO: add onload function')">
-  </script>
+  <script src="https://pay.google.com/gp/p/js/pay.js"></script>
   <script type="text/javascript" src="https://ws.bluesnap.com/web-sdk/4/bluesnap.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -92,11 +89,10 @@
         crossDomain: true,
         dataType: "json",
         success: function (data, status, jqXHR) {
-          $("#subscribe-analytics-success").click()
           $("#payment-form").hide();
-          $("#payment-success").show();
-          loadingDiv.style.visibility = 'hidden';
+          $("#payment-update-success").show();
           $('#loading-body').hide();
+          $('#error-body').hide();
         },
 
         error: function (jqXHR, status) {
