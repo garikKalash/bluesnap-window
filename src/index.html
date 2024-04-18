@@ -127,22 +127,25 @@
         'gatewayMerchantId': '1007233'
       }
     };
-    var paymentsClient = new google.payments.api.PaymentsClient({environment: 'TEST'});
-    const allowedCardNetworks = ["AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA"];
-    const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
-    const baseCardPaymentMethod = {
-      type: 'CARD',
-      parameters: {
-        allowedAuthMethods: allowedCardAuthMethods,
-        allowedCardNetworks: allowedCardNetworks
-      }
-    };
-    const cardPaymentMethod = Object.assign(
-      {tokenizationSpecification: tokenizationSpecification},
-      baseCardPaymentMethod
-    );
-
+    var paymentsClient;
+    if(showGPay) {
+      paymentsClient = new google.payments.api.PaymentsClient({environment: 'TEST'});
+      const allowedCardNetworks = ["AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA"];
+      const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+      const baseCardPaymentMethod = {
+        type: 'CARD',
+        parameters: {
+          allowedAuthMethods: allowedCardAuthMethods,
+          allowedCardNetworks: allowedCardNetworks
+        }
+      };
+      const cardPaymentMethod = Object.assign(
+        {tokenizationSpecification: tokenizationSpecification},
+        baseCardPaymentMethod
+      );
+    }
     document.addEventListener('DOMContentLoaded', function() {
+      if(!showGPay) return;
       $.ajax({
         type: "GET",
         beforeSend: function (xhr) {
@@ -240,6 +243,11 @@
     var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
     var trial =urlParams.get('trial');
     var subId = urlParams.get('subId');
+    var paymentAB = urlParams.get('payment_a_b');
+    var showGPay = false;
+    if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'GPAY') {
+      showGPay = true;
+    }
 
     if(trial){
       if(trial.toLowerCase() === 'false') trial = null;

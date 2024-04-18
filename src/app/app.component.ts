@@ -22,6 +22,7 @@ export class AppComponent implements OnInit{
   price = new URLSearchParams(window.location.search).get('price');
   newShop = new URLSearchParams(window.location.search).get('new-shop');
   version = new URLSearchParams(window.location.search).get('version');
+  paymentAB = new URLSearchParams(window.location.search).get('payment_a_b');
   trial = new URLSearchParams(window.location.search).get('trial');
 
   update = new URLSearchParams(window.location.search).get('update')
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit{
   period: string | undefined;
   gifts: string | undefined;
   showEmailHint: boolean = false;
+  showGPay: boolean  = false;
 
   customDetails = (this.price !== null && this.frequency !== null) && (this.price !== '' && this.frequency !== '');
 
@@ -49,6 +51,9 @@ export class AppComponent implements OnInit{
       this.rolls = null;
     } else {
       this.bonusDetails = '1-time gift: '+this.rolls+' rolls';
+    }
+    if(this.paymentAB !== null && this.paymentAB !== undefined) {
+      this.showGPay = this.paymentAB === 'GPAY';
     }
   }
 
@@ -136,6 +141,15 @@ export class AppComponent implements OnInit{
             this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
             this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
           } else if(this.plan == 'MEAL_3_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_6_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_9_SHARED'){
+            this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+            this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+          } else if(this.plan == 'MEAL_12_SHARED'){
             this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
             this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
           } else {
@@ -325,6 +339,15 @@ export class AppComponent implements OnInit{
                   this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
                   this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
                 } else if(this.plan == 'MEAL_3_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_6_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_9_SHARED'){
+                  this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
+                  this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
+                } else if(this.plan == 'MEAL_12_SHARED'){
                   this.detailString = (this.customDetails ? "$" + this.price  : "$2.79") + " X " + multiplyPart
                   this.total =  (this.price !== null && this.price !== '' ? +this.price : 2.79) * totalMultiplier ;
                 } else {
