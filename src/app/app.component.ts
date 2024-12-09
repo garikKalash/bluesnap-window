@@ -20,7 +20,6 @@ export class AppComponent implements OnInit{
   paypal_plan_id = new URLSearchParams(window.location.search).get('paypal_plan_id');
   frequency = new URLSearchParams(window.location.search).get('frequency');
   price = new URLSearchParams(window.location.search).get('price');
-  newShop = new URLSearchParams(window.location.search).get('new-shop');
   version = new URLSearchParams(window.location.search).get('version');
   paymentAB = new URLSearchParams(window.location.search).get('payment_a_b');
   trial = new URLSearchParams(window.location.search).get('trial');
@@ -58,6 +57,7 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit() {
+    console.log('ng oninit ')
     if (this.uid) {
       this.analytics.logEvent('payment_page_landing', {"uid": this.uid, "plan": this.plan, "plan_id": this.plan_id});
       this.userService.getUser(this.uid).subscribe(u=>{
@@ -66,17 +66,19 @@ export class AppComponent implements OnInit{
       });
     }
     if(this.plan_id){
+      console.log('ng plan ' + this.plan_id)
       let planId = '';
       if(this.plan == 'FREE_DELIVERY') {
-        planId = 'FREE_DELIVERY' +  '_' + (this.newShop != null && this.price != null
+        planId = 'FREE_DELIVERY' +  (this.price != null
           ? '_' + this.price.replace('.', '') : '');
+        console.log('ng plan ' + this.plan)
       } else if(this.plan != null && this.plan.includes('SHARED')){
         planId = this.plan + '_0' +  (this.price != null
           ? '_' + this.price.replace('.', '') : '');
       } else {
         planId = this.plan
           + (this.trial ? '_TRIAL' : '') + '_'
-          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.newShop != null && this.price != null
+          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.price != null
             ? '_' + this.price.replace('.', '') : '');
       }
       this.paymentService.getPlan({uid: this.uid, planId: planId})
@@ -259,11 +261,6 @@ export class AppComponent implements OnInit{
           }
         }
         if(this.total) {
-          if (this.newShop != null && this.newShop.trim() != '' && this.plan != 'FREE_DELIVERY'){
-            if(animalCount > 1) {
-              this.total = this.total / animalCount;
-            }
-          }
           this.total = +this.total.toFixed(2)
         } else if(this.price != null){
           let planId = '';
@@ -455,11 +452,6 @@ export class AppComponent implements OnInit{
                 }
               }
               if(this.total) {
-                if (this.newShop != null && this.newShop.trim() != '' && this.plan != 'FREE_DELIVERY'){
-                  if(animalCount > 1) {
-                    this.total = this.total / animalCount;
-                  }
-                }
                 this.total = +this.total.toFixed(2)
               }});
         }
