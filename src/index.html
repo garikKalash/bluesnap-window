@@ -180,9 +180,9 @@
                           })
                           .catch(function(err) {
                             // show error in developer console for debugging
-                            alert(err);
-                            $("#payment-form").hide();
-                            $("#payment-success").show();
+                            console.log(err);
+                            $("#payment-form").show();
+                            $("#payment-success").hide();
                             $('#loading-body').hide();
                             $('#error-body').hide();
                             $('#update-payment-form').hide();
