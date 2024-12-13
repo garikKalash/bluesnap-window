@@ -21,7 +21,7 @@ export class AppComponent implements OnInit{
   frequency = new URLSearchParams(window.location.search).get('frequency');
   price = new URLSearchParams(window.location.search).get('price');
   version = new URLSearchParams(window.location.search).get('version');
-  paymentAB = new URLSearchParams(window.location.search).get('payment_a_b');
+  paymentAB = new URLSearchParams(window.location.search).get('store_type');
   trial = new URLSearchParams(window.location.search).get('trial');
 
   update = new URLSearchParams(window.location.search).get('update')

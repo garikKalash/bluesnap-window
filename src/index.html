@@ -245,7 +245,7 @@
     var animal_ids = urlParams.get('animal_ids') != null ? urlParams.get('animal_ids').split(",").map(n => {return Number(n)}) : null;
     var trial =urlParams.get('trial');
     var subId = urlParams.get('subId');
-    var paymentAB = urlParams.get('payment_a_b');
+    var paymentAB = urlParams.get('store_type');
     var showGPay = false;
     if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'GPAY') {
       showGPay = true;
