@@ -69,13 +69,15 @@ export class AppComponent implements OnInit{
         this.expireTimeInSec--;
         this.expireDetails = Math.floor(this.expireTimeInSec / 60) + 'm ' + this.expireTimeInSec % 60 + 's'
       } else {
-        if(document.querySelector("#payment-success") == null) {
+        // @ts-ignore
+        if(window.getComputedStyle(document.querySelector('#payment-success')).display === 'none') {
           this.expired = true;
         }
         clearInterval(this.timer);
       }
     }, 1000); // Update every second
   }
+
 
   ngOnInit() {
     if(this.errorDetails){
@@ -88,13 +90,15 @@ export class AppComponent implements OnInit{
           // @ts-ignore
           this.expireTimeInSec = Math.floor(new Date(b.expiresAt).getTime() - new Date(d.now).getTime()) / 1000
           if(this.expireTimeInSec <= 0) {
-            if(document.querySelector("#payment-success") == null) {
+            // @ts-ignore
+            if(window.getComputedStyle(document.querySelector('#payment-success')).display === 'none') {
               this.expired = true;
             }
           }
           this.startTimer()
         }, error => {
-          if(document.querySelector("#payment-success") == null) {
+          // @ts-ignore
+          if(window.getComputedStyle(document.querySelector('#payment-success')).display === 'none') {
             this.expired = true;
           }
         });
