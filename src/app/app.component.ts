@@ -67,7 +67,9 @@ export class AppComponent implements OnInit{
       if (this.expireTimeInSec > 0) {
         this.expireTimeInSec--;
       } else {
-        this.expired = true;
+        if(document.querySelector("#payment-success") == null) {
+          this.expired = true;
+        }
         clearInterval(this.timer);
       }
     }, 1000); // Update every second
@@ -84,11 +86,15 @@ export class AppComponent implements OnInit{
           // @ts-ignore
           this.expireTimeInSec = Math.floor(new Date(b.expiresAt).getTime() - new Date(d.now).getTime()) / 1000
           if(this.expireTimeInSec <= 0) {
-            this.expired = true;
+            if(document.querySelector("#payment-success") == null) {
+              this.expired = true;
+            }
           }
           this.startTimer()
         }, error => {
-          this.expired = true;
+          if(document.querySelector("#payment-success") == null) {
+            this.expired = true;
+          }
         });
       })
       this.analytics.logEvent('payment_page_landing', {"uid": this.uid, "plan": this.plan, "plan_id": this.plan_id});

@@ -132,6 +132,7 @@
         success: function (data, status, jqXHR) {
           $("#payment-form").hide();
           $("#expired-session-container").hide();
+          console.log('success-show')
           $("#payment-success").show();
           $('#loading-body').hide();
           $('#error-body').hide();
@@ -241,6 +242,7 @@
                 console.error(err);
                 $("#payment-form").hide();
                 $("#expired-session-container").hide();
+                console.log('success-show')
                 $("#payment-success").show();
                 $('#loading-body').hide();
                 $('#error-body').hide();
@@ -346,6 +348,7 @@
             success: function (data, status, jqXHR) {
               $("#payment-form").hide();
               $("#expired-session-container").hide();
+              console.log('success-show')
               $("#payment-success").show();
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
@@ -418,6 +421,7 @@
               success: function (data, status, jqXHR) {
                 $("#payment-form").hide();
                 $("#expired-session-container").hide();
+                console.log('success-show')
                 $("#payment-success").show();
                 loadingDiv.style.visibility = 'hidden';
                 $('#loading-body').hide();
@@ -630,6 +634,7 @@
                     $("#subscribe-analytics-success").click()
                     $("#payment-form").hide();
                     $("#expired-session-container").hide();
+                    console.log('success-show')
                     $("#payment-success").show();
                     loadingDiv.style.visibility = 'hidden';
                     $('#loading-body').hide();
