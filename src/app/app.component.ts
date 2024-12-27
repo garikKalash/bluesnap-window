@@ -39,6 +39,7 @@ export class AppComponent implements OnInit{
   showGPay: boolean  = false;
 
   expireTimeInSec: number = 0.0;
+  expireDetails: string = '0m';
   now: Date | undefined = new Date();
   timer: any;
   expired: boolean = false;
@@ -66,6 +67,7 @@ export class AppComponent implements OnInit{
     this.timer = setInterval(() => {
       if (this.expireTimeInSec > 0) {
         this.expireTimeInSec--;
+        this.expireDetails = Math.floor(this.expireTimeInSec / 60) + 'm ' + this.expireTimeInSec % 60 + 's'
       } else {
         if(document.querySelector("#payment-success") == null) {
           this.expired = true;

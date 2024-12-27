@@ -4,7 +4,7 @@
   <p>Session expired. Please go back to the app and try again.</p>
 </div>
 
-
+<div *ngIf="!expired" style="text-align: right;width: 100%;">Session expires: {{ expireDetails }}</div>
 <div *ngIf="!subscriptionId && !expired">
 <div id="error-body" class="alert alert-danger" style="display: none">
   <p id="error-content">Oops payment isn't completed</p>
@@ -108,7 +108,7 @@
   </div>
   <p style="font-size: x-small; text-align: center" *ngIf="version && paypal_plan_id"> <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
 </div>
-  <div *ngIf="!expired" style="text-align: center;width: 100%;">Session expires: {{ expireTimeInSec }} s</div>
+
 <div id="payment-success" class="successScreen" style="display: none">
   <div class="card">
     <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
