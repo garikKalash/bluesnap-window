@@ -1,6 +1,6 @@
 <app-update-plan *ngIf="subscriptionId"></app-update-plan>
 
-<div *ngIf="expired" class="alert alert-danger" style="margin-top: 15%; text-align: center">
+<div *ngIf="expired" id="expired-session-container" class="alert alert-danger" style="margin-top: 15%; text-align: center">
   <p>Session expired. Please go back to the app and try again.</p>
 </div>
 
@@ -34,7 +34,7 @@
   <div *ngIf="paypal_plan_id" id="paypal-button-container" class="panel-body"></div>
   <div style="width: 82%;
     margin-left: 9%;
-    margin-top: -8%; height: 40px" *ngIf="true" id="gpay-container"></div>
+    margin-top: 5%; height: 40px" *ngIf="showGPay" id="gpay-container"></div>
   <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 2.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
   <p *ngIf="paypal_plan_id && !version" style="display: inline-block; float: left; margin-left: 1%; margin-right: 1%">OR</p>
   <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 2.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>

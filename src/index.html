@@ -131,9 +131,11 @@
         dataType: "json",
         success: function (data, status, jqXHR) {
           $("#payment-form").hide();
+          $("#expired-session-container").hide();
           $("#payment-success").show();
           $('#loading-body').hide();
           $('#error-body').hide();
+          $('#error-body-from-url').hide();
           $('#update-payment-form').hide();
         },
 
@@ -225,6 +227,7 @@
                             $("#payment-success").hide();
                             $('#loading-body').hide();
                             $('#error-body').hide();
+                            $('#error-body-from-url').hide();
                             $('#update-payment-form').hide();
                           });
                       },
@@ -237,9 +240,11 @@
                 // show error in developer console for debugging
                 console.error(err);
                 $("#payment-form").hide();
+                $("#expired-session-container").hide();
                 $("#payment-success").show();
                 $('#loading-body').hide();
                 $('#error-body').hide();
+                $('#error-body-from-url').hide();
                 $('#update-payment-form').hide();
               });
           },
@@ -340,6 +345,7 @@
             dataType: "json",
             success: function (data, status, jqXHR) {
               $("#payment-form").hide();
+              $("#expired-session-container").hide();
               $("#payment-success").show();
               loadingDiv.style.visibility = 'hidden';
               $('#loading-body').hide();
@@ -411,6 +417,7 @@
               dataType: "json",
               success: function (data, status, jqXHR) {
                 $("#payment-form").hide();
+                $("#expired-session-container").hide();
                 $("#payment-success").show();
                 loadingDiv.style.visibility = 'hidden';
                 $('#loading-body').hide();
@@ -548,6 +555,7 @@
                   $("#payment-update-success").show();
                   $('#loading-body').hide();
                   $('#error-body').hide();
+                  $('#error-body-from-url').hide();
                 },
 
                 error: function (jqXHR, status) {
@@ -565,6 +573,7 @@
       } else {
           $("#subscribe-analytics").click()
           $('#error-body').hide();
+        $('#error-body-from-url').hide();
           $('#loading-body').show();
           var loadingDiv = document.getElementById('loading');
           loadingDiv.style.visibility = 'visible';
@@ -620,6 +629,7 @@
                   success: function (data, status, jqXHR) {
                     $("#subscribe-analytics-success").click()
                     $("#payment-form").hide();
+                    $("#expired-session-container").hide();
                     $("#payment-success").show();
                     loadingDiv.style.visibility = 'hidden';
                     $('#loading-body').hide();
