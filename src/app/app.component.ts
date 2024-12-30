@@ -78,6 +78,12 @@ export class AppComponent implements OnInit{
     }, 1000); // Update every second
   }
 
+  increaseSessionTimeIfNeeded() {
+    if(this.expireTimeInSec < 10) {
+      this.expireTimeInSec = this.expireTimeInSec + 10;
+    }
+  }
+
 
   ngOnInit() {
     if(this.errorDetails){
