@@ -210,10 +210,11 @@
             paymentsClient.isReadyToPay(isReadyToPayRequest)
               .then(function(response) {
                 if (response.result) {
+                  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
                   const button =
                     paymentsClient.createButton({
-                      buttonColor: 'white',
-                      buttonType: 'pay',
+                      buttonColor: isDarkMode ? 'white' : 'black',
+                      buttonType: 'subscribe',
                       buttonSizeMode: 'fill',
                       onClick: () => {
                         paymentsClient.loadPaymentData(isReadyToPayRequest)
