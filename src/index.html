@@ -145,6 +145,63 @@
           $("#payment-success").hide();
           $('#loading-body').hide();
           $('#error-body').show();
+          var err = jqXHR.responseJSON.message;
+          if(err.includes('Please contact the issuing bank.')){
+            err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
+          }
+
+          $('#error-content').text(err);
+          fetchNewTokenAndReload(err);
+          $('#update-payment-form').hide();
+        }
+      });
+    }
+
+    function processApplePayment(token, session) {
+      // @todo pass paymentToken to your gateway to process payment
+      data = {}
+      data.applePayToken = token;
+      data.userId = uid;
+      data.planId = plan_id;
+      data.plan = plan;
+      data.animalIds = animal_ids;
+      data.newShop = newShop != null;
+      data.price = price
+      if(trial) data.trial = true;
+      $('#loading-body').show();
+
+      $.ajax({
+        type: "POST",
+        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
+        url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+        data: JSON.stringify(data),// now data come in this function
+        contentType: "application/json; charset=utf-8",
+        crossDomain: true,
+        dataType: "json",
+        success: function (data, status, jqXHR) {
+          $("#payment-form").hide();
+          $("#expired-session-container").hide();
+          console.log('success-show')
+          $("#payment-success").show();
+          session.completePayment(ApplePaySession.STATUS_SUCCESS)
+          $('#loading-body').hide();
+          $('#error-body').hide();
+          $('#error-body-from-url').hide();
+          $('#update-payment-form').hide();
+        },
+        error: function (jqXHR, status) {
+          session.abort()
+          $("#payment-form").hide();
+          $("#payment-success").hide();
+          $('#loading-body').hide();
+          $('#error-body').show();
+          var err = jqXHR.responseJSON.message;
+          if(err.includes('Please contact the issuing bank.')){
+            err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
+          }
+
+          $('#error-content').text(err);
+          fetchNewTokenAndReload(err);
           $('#update-payment-form').hide();
         }
       });
@@ -217,6 +274,7 @@
                       buttonType: 'subscribe',
                       buttonSizeMode: 'fill',
                       onClick: () => {
+                        $('#error-content').hide()
                         paymentsClient.loadPaymentData(isReadyToPayRequest)
                           .then(function(paymentData) {
                             // handle the response
@@ -234,21 +292,22 @@
                           });
                       },
                       allowedPaymentMethods: [cardPaymentMethod]}); // same payment methods as for the loadPaymentData() API call
-                  console.log('gpay init ')
                   document.getElementById('gpay-container').appendChild(button);
                 }
               })
-              .catch(function(err) {
+              .catch( function(jqXHR, status) {
+                if(showGPay){
                 // show error in developer console for debugging
-                console.error(err);
-                $("#payment-form").hide();
-                $("#expired-session-container").hide();
-                console.log('success-show')
-                $("#payment-success").show();
-                $('#loading-body').hide();
-                $('#error-body').hide();
-                $('#error-body-from-url').hide();
-                $('#update-payment-form').hide();
+                  var err = jqXHR.responseJSON.message;
+                  if(err.includes('Please contact the issuing bank.')){
+                    err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
+                  }
+                  $('#error-content').text(err);
+                  fetchNewTokenAndReload(err);
+                  loadingDiv.style.visibility = 'hidden';
+                  $('#loading-body').hide();
+                  $('#update-payment-form').hide();
+                }
               });
           },
           error: function (jqXHR, status) {
@@ -295,9 +354,15 @@
     var subId = urlParams.get('subId');
     var paymentAB = urlParams.get('store_type');
     var showGPay = false;
+    var showAPay = false;
     if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'GPAY') {
       showGPay = true;
     }
+    if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'APAY') {
+      showAPay = window.ApplePaySession && ApplePaySession.canMakePayments();
+
+    }
+
 
     if(trial){
       if(trial.toLowerCase() === 'false') trial = null;
@@ -322,6 +387,8 @@
         },
         onClick: function(data, actions) {
           $("#click-paypal-button").click()
+          $("#error-body").hide();
+          $("#error-body-from-url").hide();
         },
         onApprove: function (data, actions) {
           console.log('You have successfully created subscription ' + data.subscriptionID); // Optional message given to subscriber
@@ -535,6 +602,8 @@
     /* Calling bluesnap.submitCredentials: function that submits card data to
     BlueSnap and calls input function with card data object if submission was successful */
     function do_when_clicking_submit_button() {
+      $("#error-body-from-url").hide();
+      $("#error-body").hide();
       if(subId){
         bluesnap.hostedPaymentFieldsSubmitData(
           function(callback) {
@@ -566,7 +635,13 @@
                 error: function (jqXHR, status) {
                   console.log(jqXHR)
                   $('#error-body').show();
-                  $('#error-content').text('Something went wrong in update payment source');
+                  var err = jqXHR.responseJSON.message;
+                  if(err.includes('Please contact the issuing bank.')){
+                    err = 'Use Credit Card/PayPal (debit cards may be refused by your bank)';
+                  }
+
+                  $('#error-content').text(err);
+                  fetchNewTokenAndReload(err);
                   $('#loading-body').hide();
                 }
               });
@@ -665,5 +740,99 @@
     }
   </script>
   <script src="https://pay.google.com/gp/p/js/pay.js" onload="setupGPay()"></script>
+  <script>
+    var request;
+
+    function applePayClicked() {
+      $('#error-body').hide();
+      $('#error-body-from-url').hide();
+      var session = new ApplePaySession(2, request);
+      session.onvalidatemerchant = function(event) {
+        var validationURL = event.validationURL;
+        console.log('validation url ' + validationURL);
+        fetch('https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/apple-wallet-token?url='+validationURL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'uid': uid // Add the 'uid' parameter to the headers
+          },
+        })
+          .then(response => {
+            // Check if the response is successful
+            if (!response.ok) {
+              throw new Error(`Failed to fetch token: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            var encoded64 = data.token;
+            var decodedToken = atob(encoded64);
+            session.completeMerchantValidation(JSON.parse(decodedToken));
+          })
+          .catch(error => {
+            console.error('Error fetching new token:', error);
+          });
+      };
+      session.onpaymentauthorized = function(event) {
+        var paymentToken = event.payment;
+        console.log(paymentToken)
+
+        processApplePayment(btoa(JSON.stringify(paymentToken)), session);
+      };
+      session.begin()
+    }
+
+    function waitForElement(selector, callback) {
+      const observer = new MutationObserver(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+          observer.disconnect(); // Stop observing
+          callback(element); // Execute the callback with the element
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Example usage
+
+    document.addEventListener('DOMContentLoaded', () => {
+      waitForElement('#apple-pay-button', (element) => {
+        console.log('button is loaded')
+        element.style.visibility = 'visible';
+        $.ajax({
+          type: "GET",
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader('uid', uid);
+          },
+          url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/" +plan_id,
+          crossDomain: true,
+          dataType: "json",
+          success: function (data, status, jqXHR) {
+            console.log('data ' + data)
+            console.log('status ' + status)
+            request = {
+              merchantIdentifier: '1007233',
+              countryCode: 'US',
+              currencyCode: 'USD',
+              total: { label: data.name, amount: data.amount + '', type: 'final' },
+              supportedNetworks:[ 'amex', 'discover', 'jcb', 'masterCard', 'visa' ],
+              merchantCapabilities: [ 'supports3DS' ]
+            };
+            element.addEventListener('click', applePayClicked);
+
+          },
+          error: function (jqXHR, status) {
+            console.log('xhr ' + jqXHR)
+            console.log('status ' + status)
+          }
+        });
+
+
+      });
+    });
+
+
+  </script>
 </body>
 </html>

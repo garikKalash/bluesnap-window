@@ -1,72 +1,77 @@
 <app-update-plan *ngIf="subscriptionId"></app-update-plan>
 
-<div *ngIf="expired" id="expired-session-container" class="alert alert-danger" style="margin-top: 15%; text-align: center">
+<div *ngIf="expired" class="alert alert-danger" style="margin-top: 15%; text-align: center">
   <p>Session expired. Please go back to the app and try again.</p>
 </div>
-<div *ngIf="!subscriptionId && !expired">
-<div id="error-body" class="alert alert-danger" style="display: none">
-  <p id="error-content">Oops payment isn't completed</p>
-</div>
-<div id="error-body-from-url" class="alert alert-danger" *ngIf="errorDetails">
-  <p id="error-body-from-url-content">{{errorDetails}}</p>
-</div>
-<div style="width: 100%; text-align: center; font-weight: bold;font-size: x-large;">
-  <span *ngIf="plan != null && !plan.includes('SHARED')">{{plan == 'FREE_DELIVERY' ? 'Unlimited deliveries' : (plan == 'MEAL_1' ? (version && trial ? '3 Day Trial: 1 Meal / Day':'1 Meal / Day'): '3 Meals / Day')}}</span>
-  <p *ngIf="plan != null && plan.includes('SHARED')">
-    Shared Meals
-    <br/>
-    <span style="font-size: smaller;">{{plan != null && plan.includes('MEAL_1_') ? '2440 kibbles week (7 meals)' :
-      plan != null && plan.includes('MEAL_3_') ? '7320 kibbles week (21 meals)' :
-      plan != null && plan.includes('MEAL_6') ? '14640 kibbles week (42 meals)' :
-      plan != null && plan.includes('MEAL_9') ? '21960 kibbles week (63 meals)' :
-        '29280 kibbles week (84 meals)'
-      }}</span>
-    <br/>
-    <span style="font-size: xx-small;">* kibbles are passing daily</span>
-  </p>
-  <br *ngIf="plan != 'FREE_DELIVERY'"/>
-  <p *ngIf="plan != null && plan != 'FREE_DELIVERY' && !plan.includes('NO_SHIPPING')" style="font-size:medium; margin: 0 0 0;">Bonus: Unlimited deliveries (all dogs)</p>
-  <p *ngIf="rolls" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p>
-</div>
-<div id="payment-form"  class="panel panel-default bootstrap-basic">
-  <div *ngIf="paypal_plan_id" id="paypal-button-container" style="padding-left: 9%; padding-right: 9%"></div>
-  <div style="width: 82%;
-    margin-left: 9%;
-    height: 40px" *ngIf="showGPay" id="gpay-container"></div>
-  <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 7.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
-  <p *ngIf="paypal_plan_id && !version" style="display: inline-block; float: left; margin-left: 1%; margin-right: 1%; margin-top: 5%">OR</p>
-  <hr *ngIf="paypal_plan_id && !version" style="width:44%; margin-top: 7.9%;border-top: 1px solid darkgrey; display: inline-block; float: left"/>
 
-  <form class="panel-body" *ngIf="!version" id="checkout-form" action="#">
-    <div class="row" style="margin-bottom: -15px">
-      <!--Hosted Field for CC number-->
-      <div class="form-group col-md-12">
-        <label for="card-number">Card Number</label>
-        <div id="ccn-analytics" (click)="clickOnCard()"></div>
-        <div class="input-group">
-          <div class="form-control" id="card-number" data-bluesnap="ccn"></div>
-          <div id="card-logo" class="input-group-addon"><img src="https://files.readme.io/d1a25b4-generic-card.png" height="20px"></div>
-        </div>
-        <span class="helper-text" id="ccn-help"></span>
-      </div>
-      <!--Hosted Field for CC EXP-->
-      <div class="form-group col-xs-7" style="margin-bottom: -15px" >
-        <label for="exp-date">Exp. Date</label>
-        <div id="exp-analytics" (click)="clickOnExpDate()"></div>
-        <div class="form-control" id="exp-date" data-bluesnap="exp"></div>
-        <span class="helper-text" id="exp-help"></span>
-      </div>
-      <!--Hosted Field for CC CVV-->
-      <div class="form-group col-xs-5" style="margin-bottom: -15px">
-        <label for="cvv">CVV</label>
-        <div id="cvv-analytics" (click)="clickOnCVV()"></div>
-        <div class="form-control" id="cvv" data-bluesnap="cvv" (click)="clickOnCVV()"></div>
-        <span class="helper-text" id='cvv-help'></span>
-      </div>
+
+<div *ngIf="!subscriptionId && !expired">
+  <div id="error-body" class="alert alert-danger" style="display: none">
+    <p id="error-content">{{errorContent}}</p>
+  </div>
+  <div id="error-body-from-url" class="alert alert-danger" *ngIf="errorDetails">
+    <p id="error-body-from-url-content">{{errorDetails}}</p>
+  </div>
+  <div style="width: 100%; text-align: center; font-weight: bold;font-size: large; margin-top: -4%">
+    <span *ngIf="plan != null && !plan.includes('SHARED')">{{plan == 'FREE_DELIVERY' ? 'Unlimited deliveries' : (plan.includes('MEAL_1') ? (version && trial ? '3 Day Trial: 1 Meal / Day':'1 Meal / Day'): '3 Meals / Day')}}</span>
+    <p *ngIf="plan != null && plan.includes('SHARED')" style="margin: 0 0 0">
+      {{sharedMealTitle}}
+    </p>
+    <p *ngIf="plan != null && plan.includes('SHARED')" style="font-size:small; margin: 0 0 0">
+      {{plan != null && plan.includes('MEAL_1') ? '320 kibbles a day shared between your dogs' : '960 kibbles a day shared between your dogs'}}
+    </p>
+    <br *ngIf="plan != null && plan != 'FREE_DELIVERY' && !plan.includes('SHARED')"/>
+    <p *ngIf="plan != null && plan != 'FREE_DELIVERY' && !plan.includes('NO_SHIPPING')" style="font-size:x-small; margin: 0 0 0;">Bonus: Unlimited deliveries (all dogs)</p>
+    <p *ngIf="rolls" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p>
+  </div>
+  <div id="payment-form" class="panel panel-default bootstrap-basic" [ngStyle]="{'width': (isMobileView ? '100%' : '40%')}">
+    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && !version" id="paypal-button-container" style="padding-left: 9%; padding-right: 9%" (click)="increaseSessionTimeIfNeeded()"></div>
+    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && version" id="paypal-button-container"  style="padding-left: 9%; padding-right: 9%" (click)="increaseSessionTimeIfNeeded()"></div>
+    <div style="width: 91%;
+    margin: 0.5em 0;
+    padding-left: 9%;
+    height: 40px" *ngIf="showGPay" id="gpay-container" (click)="increaseSessionTimeIfNeeded()"></div>
+    <div style="width: 91%;
+    margin: 0.5em 0;
+    padding-left: 9%;">
+    <button style="width: 100%; visibility: hidden" id="apple-pay-button"></button>
     </div>
-    <div class="row">
-      <div class="form-group col-md-12" style="position: relative; margin-top: 9%" *ngIf="isAnonymous" >
-        <div style="width: 100%;
+    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && !version && token" style="display: flex; align-items: center; justify-content: center;
+  margin: 1.5em 0;
+  margin-bottom: 2em;">
+      <hr style="flex: 1; border: none; border-top: 1px solid darkgrey; margin: 0;">
+      <span style="margin: 0 1em; color: darkgrey; font-size: 1rem; line-height: 1;">OR</span>
+      <hr style="flex: 1; border: none; border-top: 1px solid darkgrey; margin: 0;">
+    </div>
+    <form class="panel-body" *ngIf="!version && token" id="checkout-form" action="#">
+      <div class="row" style="margin-bottom: -15px">
+        <!--Hosted Field for CC number-->
+        <div class="form-group col-md-12" style="margin-bottom: 0px; margin-top: -30px;">
+          <label for="card-number" style="font-size: small;">Card Number</label>
+          <div id="ccn-analytics" (click)="clickOnCard()"></div>
+          <div class="input-group">
+            <div class="form-control" id="card-number" data-bluesnap="ccn"></div>
+            <div id="card-logo" class="input-group-addon"><img src="https://files.readme.io/d1a25b4-generic-card.png" height="20px"></div>
+          </div>
+          <span class="helper-text" id="ccn-help"></span>
+        </div>
+        <!--Hosted Field for CC EXP-->
+        <div class="col-xs-7" >
+          <label for="exp-date" style="font-size: small;">Exp. Date</label>
+          <div id="exp-analytics" (click)="clickOnExpDate()"></div>
+          <div class="form-control" id="exp-date" data-bluesnap="exp"></div>
+          <span class="helper-text" id="exp-help"></span>
+        </div>
+        <!--Hosted Field for CC CVV-->
+        <div class="col-xs-5">
+          <label for="cvv" style="font-size: small;">CVV</label>
+          <div id="cvv-analytics" (click)="clickOnCVV()"></div>
+          <div class="form-control" id="cvv" data-bluesnap="cvv" (click)="clickOnCVV()"></div>
+          <span class="helper-text" id='cvv-help'></span>
+        </div>
+
+        <div class="col-md-12" style="position: relative; " *ngIf="isAnonymous" >
+          <div style="width: 100%;
     height: 28px;
     background-color: grey;
     position: absolute;
@@ -75,66 +80,61 @@
     padding: 2%;
     margin-top: 20%;
     font-size: smaller;" *ngIf="showEmailHint" >
-          <p>For potential customer service support purposes</p>
+            <p>For potential customer service support purposes</p>
+
+          </div>
+          <label for="email" style="font-weight: 700">Contact details</label>
+          <input id="email"  [(ngModel)]="enteredEmail" type="email"  style="width: 85%; padding-left: 3%; height: 35px" placeholder="example@email.com">
+          <button mat-icon-button *ngIf="!showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>help</mat-icon></button>
+          <button mat-icon-button *ngIf="showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>close</mat-icon></button>
         </div>
-        <label for="email" style="font-weight: 700">Contact details</label>
-        <input id="email"  [(ngModel)]="enteredEmail" type="email"  [ngModelOptions]="{standalone: true}" style="width: 85%; padding-left: 3%; height: 35px" placeholder="example@email.com">
-        <button mat-icon-button *ngIf="!showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>help</mat-icon></button>
-        <button mat-icon-button *ngIf="showEmailHint" (click)="showEmailHint = ! showEmailHint"><mat-icon>close</mat-icon></button>
+
+
       </div>
-    </div>
-    <div style="text-align: center; width: 100%; margin-top: 5%">
+
+      <div style="text-align: center; width: 100%; margin-top: 5%; font-size: x-small">
+        <p style="margin:0 0 0">{{detailString}}</p>
+        <p style="margin:0 0 0; font-size: small" ><span style="font-weight: bold">Total:</span> {{total}} USD {{detailSharedString}}</p>
+      </div>
+      <div style="text-align: center; margin-top: 1.5em">
+        <button class="btn btn-success btn-lg col-xs-6"
+                style="width:100%; font-size: 5vw !important;background-color: deeppink !important; text-align: center !important; border: none !important;"
+                type="button" id="submit-button"  onclick="do_when_clicking_submit_button()" (click)="increaseSessionTimeIfNeeded()">{{trial ? '3 Day Trial & Subscribe' : 'Subscribe'}}</button>
+        <br/>
+        <p style="font-size: x-small">Cancel anytime  <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
+      </div>
+      <div *ngIf="(showGPay || showAPay) && !expired && showTimer" style="text-align: center;width: 100%; font-size: small">Session expires: {{ expireDetails }}</div>
+
+      <div id="subscribe-analytics" (click)="clickOnSubscribe()"></div>
+      <div id="subscribe-gpay" (click)="clickOnGpay()"></div>
+      <div id="click-paypal-button" (click)="clickOnPaypalButton()"></div>
+      <div id="valid-bluesnap-analytics" (click)="validBluesnap()"></div>
+      <div id="success-paypal" (click)="successPaypal()"></div>
+      <div id="success-gpay" (click)="successGPay()"></div>
+      <div id="invalid-bluesnap-analytics" (click)="inValidBluesnap()"></div>
+      <div id="subscribe-analytics-success" (click)="clickOnSubscribeSuccess()"></div>
+      <div id="subscribe-analytics-error" (click)="clickOnSubscribeError()"></div>
+    </form>
+    <div style="text-align: center; width: 100%; font-size: x-small" *ngIf="version">
       <p style="margin:0 0 0">{{detailString}}</p>
-      <p style="margin:0 0 0"><span style="font-weight: bold">Total:</span> ${{total}}</p>
+      <p style="margin:0 0 0; font-size: small"><span style="font-weight: bold">Total:</span> {{total}} USD {{detailSharedString}}</p>
     </div>
-    <div style="text-align: center; margin-top: 7%">
-      <button class="btn btn-success btn-lg col-xs-6"
-              style="width:100%; font-size: 5vw !important;background-color: deeppink !important; text-align: center !important; border: none !important;"
-              type="button" id="submit-button"  onclick="do_when_clicking_submit_button();" (click)="increaseSessionTimeIfNeeded()">
-        {{trial ? '3 Day Trial & Subscribe' : 'Subscribe'}}
-      </button>
-      <br/>
-      <p style="font-size: x-small">Cancel anytime  <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
-    </div>
-    <div *ngIf="!expired" style="text-align: center;width: 100%; font-size: small">Session expires: {{ expireDetails }}</div>
-    <div id="subscribe-analytics" (click)="clickOnSubscribe()"></div>
-    <div id="click-paypal-button" (click)="clickOnPaypalButton()"></div>
-    <div id="valid-bluesnap-analytics" (click)="validBluesnap()"></div>
-    <div id="success-paypal" (click)="successPaypal()"></div>
-    <div id="invalid-bluesnap-analytics" (click)="inValidBluesnap()"></div>
-    <div id="subscribe-analytics-success" (click)="clickOnSubscribeSuccess()"></div>
-    <div id="subscribe-analytics-error" (click)="clickOnSubscribeError()"></div>
-  </form>
-  <div style="text-align: center; width: 100%" *ngIf="version">
-    <p style="margin:0 0 0">{{detailString}}</p>
-    <p style="margin:0 0 0"><span style="font-weight: bold">Total:</span> ${{total}}</p>
+    <p style="font-size: x-small; text-align: center" *ngIf="version && paypal_plan_id"> <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
   </div>
-  <p style="font-size: x-small; text-align: center" *ngIf="version && paypal_plan_id"> <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
-</div>
+  <div id="payment-success" class="successScreen" style="display: none">
+    <div class="card">
+      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto; text-align: center">
+        <i class="success-checkmark">✓</i>
+      </div>
+      <h1 class="successH1">Success!</h1>
+      <p class="successContent">Switch back to the app to finish up </p>
+    </div>
+  </div>
 
-<div id="payment-success" class="successScreen" style="display: none">
-  <div class="card">
-    <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
-      <i class="success-checkmark">✓</i>
+  <div id="loading-body" class="loading-container" style="display: none">
+    <div id="loading" class="loading">
+      <span style="margin-left: 15px;">Loading..</span>
     </div>
-    <h1 class="successH1">Success</h1>
-    <p class="successContent">The payment request is completed<br/> Thanks for your Treatment! </p>
   </div>
-</div>
-<div id="payment-update-success" class="successScreen" style="display: none">
-  <div class="card">
-    <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
-      <i class="success-checkmark">✓</i>
-    </div>
-    <h1 class="successH1">Success</h1>
-    <p class="successContent">The payment source is updated<br/> Thanks for your Treatment! </p>
-  </div>
-</div>
-
-<div id="loading-body" class="loading-container" style="display: none">
-  <div id="loading" class="loading">
-    <span style="margin-left: 15px;">Loading..</span>
-  </div>
-</div>
 </div>
 
