@@ -65,12 +65,14 @@
   <script>
 
     function fetchNewTokenAndReload(err) {
+      var url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/session`;
       // Make a GET request to the endpoint with 'uid' in the headers
-      fetch('https://treattestenvironment.uc.r.appspot.com/rest/payments/session', {
+      fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'uid': uid // Add the 'uid' parameter to the headers
+          'uid': uid, // Add the 'uid' parameter to the headers
+          'agent-version': '20'
         },
       })
         .then(response => {
@@ -119,12 +121,19 @@
       data.newShop = newShop != null;
       data.price = price
       if(trial) data.trial = true;
+      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
+
       $('#loading-body').show();
 
       $.ajax({
         type: "POST",
-        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-        url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+        beforeSend: function(xhr){
+        xhr.setRequestHeader('uid', uid);
+          if (serverVersion) {
+            xhr.setRequestHeader('agent-version', '20');
+          }
+        },
+        url: url,
         data: JSON.stringify(data),// now data come in this function
         contentType: "application/json; charset=utf-8",
         crossDomain: true,
@@ -168,12 +177,19 @@
       data.newShop = newShop != null;
       data.price = price
       if(trial) data.trial = true;
+      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
+
       $('#loading-body').show();
 
       $.ajax({
         type: "POST",
-        beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-        url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+        beforeSend: function(xhr){
+        xhr.setRequestHeader('uid', uid);
+          if (serverVersion) {
+            xhr.setRequestHeader('agent-version', '20');
+          }
+        },
+        url: url,
         data: JSON.stringify(data),// now data come in this function
         contentType: "application/json; charset=utf-8",
         crossDomain: true,
@@ -244,13 +260,18 @@
         {tokenizationSpecification: tokenizationSpecification},
         baseCardPaymentMethod
       );
+      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/`;
+
       document.addEventListener('DOMContentLoaded', function() {
         $.ajax({
           type: "GET",
           beforeSend: function (xhr) {
             xhr.setRequestHeader('uid', uid);
+            if (serverVersion) {
+              xhr.setRequestHeader('agent-version', '20');
+            }
           },
-          url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/" +plan_id,
+          url: url + plan_id,
           crossDomain: true,
           dataType: "json",
           success: function (data, status, jqXHR) {
@@ -355,6 +376,9 @@
     var paymentAB = urlParams.get('store_type');
     var showGPay = false;
     var showAPay = false;
+    var serverVersion = urlParams.get('server-version');
+    const versionPartURL = serverVersion ? `${serverVersion}-dot-` : "";
+
     if(paymentAB !== null && paymentAB !== undefined && paymentAB === 'GPAY') {
       showGPay = true;
     }
@@ -401,14 +425,18 @@
           pdata.newShop = newShop != null;
           pdata.price = price
           pdata.paypalSubId = data.subscriptionID;
+          url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
           if(trial) pdata.trial = true;
           $('#success-paypal').click()
           $.ajax({
             type: "POST",
             beforeSend: function (xhr) {
               xhr.setRequestHeader('uid', uid);
+              if (serverVersion) {
+                xhr.setRequestHeader('agent-version', '20');
+              }
             },
-            url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+            url: url,
             data: JSON.stringify(pdata),// now data come in this function
             contentType: "application/json; charset=utf-8",
             crossDomain: true,
@@ -475,13 +503,17 @@
             pdata.paypalSubId = data.subscriptionID;
             pdata.newShop = newShop != null;
             pdata.price = price
+            url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` :`https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
             $('#success-paypal').click()
             $.ajax({
               type: "POST",
               beforeSend: function (xhr) {
                 xhr.setRequestHeader('uid', uid);
+                if (serverVersion) {
+                  xhr.setRequestHeader('agent-version', '20');
+                }
               },
-              url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe",
+              url: url,
               data: JSON.stringify(pdata),// now data come in this function
               contentType: "application/json; charset=utf-8",
               crossDomain: true,
@@ -616,10 +648,16 @@
               data.token = btoken;
               data.userId = uid;
               data.bluesnapSubId = subId;
+              url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe`;
               $.ajax({
                 type: "PUT",
-                beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-                url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe",
+                beforeSend: function(xhr){
+                  xhr.setRequestHeader('uid', uid);
+                    if (serverVersion) {
+                      xhr.setRequestHeader('agent-version', '20');
+                    }
+                },
+                url: url,
                 data: JSON.stringify(data),// now data come in this function
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
@@ -696,12 +734,18 @@
                 data.animalIds = animal_ids;
                 data.newShop = newShop != null;
                 data.price = price
+                url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
                 if(trial) data.trial = true;
 
                 $.ajax({
                   type: "POST",
-                  beforeSend: function(xhr){xhr.setRequestHeader('uid', uid);},
-                  url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe",
+                  beforeSend: function(xhr) {
+                  xhr.setRequestHeader('uid', uid);
+                  if (serverVersion) {
+                   xhr.setRequestHeader('agent-version', '20');
+                  }
+                },
+                  url: url,
                   data: JSON.stringify(data),// now data come in this function
                   contentType: "application/json; charset=utf-8",
                   crossDomain: true,
@@ -750,11 +794,14 @@
       session.onvalidatemerchant = function(event) {
         var validationURL = event.validationURL;
         console.log('validation url ' + validationURL);
-        fetch('https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/apple-wallet-token?url='+validationURL, {
+        var url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL : `https://treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL;
+
+        fetch(url+validationURL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'uid': uid // Add the 'uid' parameter to the headers
+            'uid': uid, // Add the 'uid' parameter to the headers
+            'agent-version': '20'
           },
         })
           .then(response => {
@@ -798,14 +845,18 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       waitForElement('#apple-pay-button', (element) => {
+        url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/active-plan/`;
         console.log('button is loaded')
         element.style.visibility = 'visible';
         $.ajax({
           type: "GET",
           beforeSend: function (xhr) {
             xhr.setRequestHeader('uid', uid);
+            if (serverVersion) {
+            xhr.setRequestHeader('agent-version', '20');
+          }
           },
-          url: "https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/" +plan_id,
+          url: url +plan_id,
           crossDomain: true,
           dataType: "json",
           success: function (data, status, jqXHR) {
