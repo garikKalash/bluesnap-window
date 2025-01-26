@@ -30,6 +30,8 @@ export class AppComponent implements OnInit{
   errorContent = "Oops payment isn't completed";
   rolls = new URLSearchParams(window.location.search).get('rolls_count');
   now = new URLSearchParams(window.location.search).get('now');
+  server_version = new URLSearchParams(window.location.search).get('server-version')
+
   nowDate = new Date();
   bonusDetails = '1-time gift: 90 rolls';
 
@@ -127,9 +129,9 @@ export class AppComponent implements OnInit{
       this.errorDetails = decodeURIComponent(this.errorDetails);
     }
     if (this.uid) {
-      this.paymentService.getServerTime().subscribe(d=>{
+      this.paymentService.getServerTime(this.server_version).subscribe(d=>{
         // @ts-ignore
-        this.paymentService.getPaymentMetadata(this.uid).subscribe(b => {
+        this.paymentService.getPaymentMetadata(this.uid, this.server_version).subscribe(b => {
           // @ts-ignore
           this.expireTimeInSec = Math.floor(new Date(b.expiresAt).getTime() - new Date(d.now).getTime()) / 1000
           if(this.expireTimeInSec <= 0) {
@@ -143,7 +145,7 @@ export class AppComponent implements OnInit{
         });
       })
       this.analytics.logEvent('payment_page_landing', {"uid": this.uid, "plan": this.plan, "plan_id": this.plan_id});
-      this.userService.getUser(this.uid).subscribe(u=>{
+      this.userService.getUser(this.uid, this.server_version).subscribe(u=>{
         // @ts-ignore
         this.isAnonymous = u.anon;
         // @ts-ignore
@@ -201,7 +203,7 @@ export class AppComponent implements OnInit{
           + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.price != null
             ? '_' + this.price.replace('.', '') : '');
       }
-      this.paymentService.getPlan({uid: this.uid, planId: planId})
+      this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
         .subscribe(res=>{
           let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
           let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];
@@ -428,7 +430,7 @@ export class AppComponent implements OnInit{
                 + (this.animalIds != null ? this.animalIds.split(',').length : 0)
                 +  '_' + this.price.replace('.', '');
             }
-            this.paymentService.getPlan({uid: this.uid, planId: planId})
+            this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
               .subscribe(res=>{
                 let monthId = res.planPeriodsWithPlanIds['MONTHLY'];
                 let quartId = res.planPeriodsWithPlanIds['QUARTERLY'];

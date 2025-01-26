@@ -9,21 +9,29 @@ export class UserService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getUser( uid: string ): Observable<User> {
+  getUser( uid: string ,server_version: string | null ): Observable<User> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous` : `https://treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous`;
+
     const httpOptions = {
       headers: new HttpHeaders({
-        uid: uid
+        uid: uid,
+        ...(server_version && { 'agent-version': '20' }),
       })
     };
-    return this.httpClient.get<User>(`https://treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous`, httpOptions);
+    return this.httpClient.get<User>(url, httpOptions);
   }
 
-  putEmail( uid: string, email: string ): Observable<any> {
+  putEmail( uid: string, email: string, server_version: string ): Observable<any> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}` : `https://treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}`;
+
     const httpOptions = {
       headers: new HttpHeaders({
-        uid: uid
+        uid: uid,
+        ...(server_version && { 'agent-version': '20' }),
       })
     };
-    return this.httpClient.put<any>(`https://treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}`, {}, httpOptions);
+    return this.httpClient.put<any>(url, {}, httpOptions);
   }
 }

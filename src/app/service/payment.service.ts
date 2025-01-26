@@ -13,34 +13,51 @@ export class PaymentService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getPlan({uid, planId}: { uid: any, planId: any }): Observable<Plan> {
+  getPlan({ uid, planId, server_version }: { uid: string | null; planId: string; server_version: string | null }): Observable<Plan> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
     const httpOptions = {
       headers: new HttpHeaders({
-        uid: uid
-      })
+        uid: uid!=null? uid:'',
+        ...(server_version && { 'agent-version': '20' }),
+      }),
     };
     return this.httpClient.get<Plan>(`https://treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}`, httpOptions);
   }
 
-  getPlanDetails( planId: string, uid: string): Observable<PaymentPlan> {
+  getPlanDetails( planId: string, uid: string, server_version: string | null ): Observable<PaymentPlan> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
+
     const httpOptions = {
       headers: new HttpHeaders({
-        uid: uid
+        uid: uid,
+        ...(server_version && { 'agent-version': '20' }),
       })
     };
-    return this.httpClient.get<PaymentPlan>(`https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`, httpOptions);
+    return this.httpClient.get<PaymentPlan>(url, httpOptions);
   }
 
-  getPaymentMetadata( uid: string): Observable<PaymentSessionModel> {
+  getPaymentMetadata( uid: string,  server_version: string | null): Observable<PaymentSessionModel> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/session`;
     const httpOptions = {
       headers: new HttpHeaders({
-        uid: uid
+        uid: uid,
+        ...(server_version && { 'agent-version': '20' }),
       })
     };
-    return this.httpClient.get<PaymentSessionModel>(`https://treattestenvironment.uc.r.appspot.com/rest/payments/session`, httpOptions);
+    return this.httpClient.get<PaymentSessionModel>(url, httpOptions);
   }
 
-  getServerTime(): Observable<ServerNow> {
-    return this.httpClient.get<ServerNow>(`https://treattestenvironment.uc.r.appspot.com/server-time`);
+  getServerTime( server_version: string | null): Observable<ServerNow> {
+    const versionPartURL = server_version ? `${server_version}-dot-` : '';
+    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/server-time` : `https://treattestenvironment.uc.r.appspot.com/server-time`;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        ...(server_version && { 'agent-version': '20' }),
+      })
+    };
+    return this.httpClient.get<ServerNow>(url,httpOptions);
   }
 }
