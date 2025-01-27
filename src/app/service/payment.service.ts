@@ -22,7 +22,7 @@ export class PaymentService {
         ...(server_version && { 'agent-version': '20' }),
       }),
     };
-    return this.httpClient.get<Plan>(`https://treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}`, httpOptions);
+    return this.httpClient.get<Plan>(url, httpOptions);
   }
 
   getPlanDetails( planId: string, uid: string, server_version: string | null ): Observable<PaymentPlan> {
