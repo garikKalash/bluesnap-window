@@ -7,7 +7,7 @@
       "type": "pwa-chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
-      "url": "https://treattestenvironment.uc.r.appspot.com/"
+      "url": "https://payment-dot-treattestenvironment.uc.r.appspot.com/"
     },
     {
       "name": "ng test",

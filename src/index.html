@@ -65,7 +65,7 @@
   <script>
 
     function fetchNewTokenAndReload(err) {
-      var url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/session`;
+      var url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/session`;
       // Make a GET request to the endpoint with 'uid' in the headers
       fetch(url, {
         method: 'GET',
@@ -121,7 +121,7 @@
       data.newShop = newShop != null;
       data.price = price
       if(trial) data.trial = true;
-      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
+      url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
 
       $('#loading-body').show();
 
@@ -177,7 +177,7 @@
       data.newShop = newShop != null;
       data.price = price
       if(trial) data.trial = true;
-      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
+      url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
 
       $('#loading-body').show();
 
@@ -260,7 +260,7 @@
         {tokenizationSpecification: tokenizationSpecification},
         baseCardPaymentMethod
       );
-      url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/`;
+      url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/`;
 
       document.addEventListener('DOMContentLoaded', function() {
         $.ajax({
@@ -425,7 +425,7 @@
           pdata.newShop = newShop != null;
           pdata.price = price
           pdata.paypalSubId = data.subscriptionID;
-          url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
+          url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
           if(trial) pdata.trial = true;
           $('#success-paypal').click()
           $.ajax({
@@ -503,7 +503,7 @@
             pdata.paypalSubId = data.subscriptionID;
             pdata.newShop = newShop != null;
             pdata.price = price
-            url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` :`https://treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
+            url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe` :`https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/paypal/subscribe`;
             $('#success-paypal').click()
             $.ajax({
               type: "POST",
@@ -648,7 +648,7 @@
               data.token = btoken;
               data.userId = uid;
               data.bluesnapSubId = subId;
-              url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe`;
+              url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/subscribe`;
               $.ajax({
                 type: "PUT",
                 beforeSend: function(xhr){
@@ -734,7 +734,7 @@
                 data.animalIds = animal_ids;
                 data.newShop = newShop != null;
                 data.price = price
-                url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
+                url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/subscribe`;
                 if(trial) data.trial = true;
 
                 $.ajax({
@@ -794,7 +794,7 @@
       session.onvalidatemerchant = function(event) {
         var validationURL = event.validationURL;
         console.log('validation url ' + validationURL);
-        var url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL : `https://treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL;
+        var url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL : `https://payment-dot-treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/apple-wallet-token?url=`+validationURL;
 
         fetch(url+validationURL, {
           method: 'GET',
@@ -845,7 +845,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       waitForElement('#apple-pay-button', (element) => {
-        url = serverVersion ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/active-plan/`;
+        url = serverVersion ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/` : `https://payment-dot-treattestenvironment.uc.r.appspot.comr/rest/payments/bluesnap/active-plan/`;
         console.log('button is loaded')
         element.style.visibility = 'visible';
         $.ajax({

@@ -11,7 +11,7 @@ export class UserService {
 
   getUser( uid: string ,server_version: string | null ): Observable<User> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous` : `https://treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/users/is-anonymous`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -24,7 +24,7 @@ export class UserService {
 
   putEmail( uid: string, email: string, server_version: string ): Observable<any> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}` : `https://treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/users/set-email/${email}`;
 
     const httpOptions = {
       headers: new HttpHeaders({

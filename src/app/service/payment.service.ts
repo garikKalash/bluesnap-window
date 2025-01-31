@@ -15,7 +15,7 @@ export class PaymentService {
 
   getPlan({ uid, planId, server_version }: { uid: string | null; planId: string; server_version: string | null }): Observable<Plan> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
     const httpOptions = {
       headers: new HttpHeaders({
         uid: uid!=null? uid:'',
@@ -27,7 +27,7 @@ export class PaymentService {
 
   getPlanDetails( planId: string, uid: string, server_version: string | null ): Observable<PaymentPlan> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/active-plan/${planId}` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/bluesnap/active-plan/${planId}`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -40,7 +40,7 @@ export class PaymentService {
 
   getPaymentMetadata( uid: string,  server_version: string | null): Observable<PaymentSessionModel> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://treattestenvironment.uc.r.appspot.com/rest/payments/session`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/session` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/rest/payments/session`;
     const httpOptions = {
       headers: new HttpHeaders({
         uid: uid,
@@ -52,7 +52,7 @@ export class PaymentService {
 
   getServerTime( server_version: string | null): Observable<ServerNow> {
     const versionPartURL = server_version ? `${server_version}-dot-` : '';
-    var url = server_version ? `https://${versionPartURL}treattestenvironment.uc.r.appspot.com/server-time` : `https://treattestenvironment.uc.r.appspot.com/server-time`;
+    var url = server_version ? `https://${versionPartURL}payment-dot-treattestenvironment.uc.r.appspot.com/server-time` : `https://payment-dot-treattestenvironment.uc.r.appspot.com/server-time`;
     const httpOptions = {
       headers: new HttpHeaders({
         ...(server_version && { 'agent-version': '20' }),
