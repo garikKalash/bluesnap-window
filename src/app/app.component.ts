@@ -156,10 +156,10 @@ export class AppComponent implements OnInit{
       let planId = '';
       if(this.plan == 'FREE_DELIVERY') {
         planId = 'FREE_DELIVERY' +  (this.price != null
-          ? '_' + this.price.replace('.', '') : '');
+          ? '_' + this.price.replace('.', '__') : '');
       } else if(this.plan != null && this.plan.includes('SHARED')){
         planId = this.plan + '_0' +  (this.price != null
-          ? '_' + this.price.replace('.', '') : '');
+          ? '_' + this.price.replace('.', '__') : '');
         if(this.plan.includes('MEAL_1_')) {
           this.detailSharedString = '(8,960 kibbles / 28 meals)'
           if(this.frequency == 'week') {
@@ -201,7 +201,7 @@ export class AppComponent implements OnInit{
         planId = this.plan
           + (this.trial ? '_TRIAL' : '') + '_'
           + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.price != null
-            ? '_' + this.price.replace('.', '') : '');
+            ? '_' + this.price.replace('.', '__') : '');
       }
       this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
         .subscribe(res=>{
@@ -396,9 +396,9 @@ export class AppComponent implements OnInit{
           } else if(this.price != null){
             let planId = '';
             if(this.plan == 'FREE_DELIVERY') {
-              planId = 'FREE_DELIVERY' +  '_' + this.price.replace('.', '');
+              planId = 'FREE_DELIVERY' +  '_' + this.price.replace('.', '__');
             } else if(this.plan != null && this.plan.includes('SHARED')){
-              planId = this.plan + '_0' +  '_' + this.price.replace('.', '');
+              planId = this.plan + '_0' +  '_' + this.price.replace('.', '__');
               if(this.plan.includes('MEAL_1')) {
                 this.detailSharedString = '(8,960 kibbles / 28 meals)'
               }  else if(this.plan.includes('MEAL_6')) {
@@ -428,7 +428,7 @@ export class AppComponent implements OnInit{
             } else {
               planId = this.plan + (this.trial ? '_TRIAL' : '') + '_'
                 + (this.animalIds != null ? this.animalIds.split(',').length : 0)
-                +  '_' + this.price.replace('.', '');
+                +  '_' + this.price.replace('.', '__');
             }
             this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
               .subscribe(res=>{
