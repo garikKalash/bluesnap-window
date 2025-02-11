@@ -5,6 +5,7 @@
   display: inline-block;
   width: 200px;
   min-height: 30px;
+  height: 55px;
   border: 1px solid black;
   background-image: -webkit-named-image(apple-pay-logo-white);
   background-size: 100% calc(60% + 2px);
@@ -14,9 +15,21 @@
   border-radius: 5px;
   padding: 0px;
   margin: 5px auto;
+  flex: 1
 }
 
-successScreen {
+@media only screen and (max-width: 609px) {
+  #apple-pay-button {
+    height: 45px;
+  }
+}
+
+@media only screen and (max-width: 366px) {
+  #apple-pay-button {
+    height: 34px;
+  }
+}
+.successScreen {
   text-align: center;
   padding: 40px 0;
   background: #EBF0F5;

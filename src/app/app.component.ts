@@ -22,16 +22,16 @@ export class AppComponent implements OnInit{
   frequency = new URLSearchParams(window.location.search).get('frequency');
   price = new URLSearchParams(window.location.search).get('price');
   token = new URLSearchParams(window.location.search).get('token');
+  showBluesnap = this.token !== 'BLUESNAP_DOWN'
   paymentAB = new URLSearchParams(window.location.search).get('store_type');
   version = new URLSearchParams(window.location.search).get('version');
   trial = new URLSearchParams(window.location.search).get('trial');
   subscriptionId = new URLSearchParams(window.location.search).get('subId')
+  server_version =  new URLSearchParams(window.location.search).get('server-version')
   errorDetails = new URLSearchParams(window.location.search).get('error')
   errorContent = "Oops payment isn't completed";
   rolls = new URLSearchParams(window.location.search).get('rolls_count');
   now = new URLSearchParams(window.location.search).get('now');
-  server_version = new URLSearchParams(window.location.search).get('server-version')
-
   nowDate = new Date();
   bonusDetails = '1-time gift: 90 rolls';
 
@@ -44,11 +44,7 @@ export class AppComponent implements OnInit{
   showEmailHint: boolean = false;
   showGPay: boolean  = false;
   showAPay: boolean  = false;
-  isApproveToken = this.uid === '9R9Tai5IhNeJmRLr5IhtVc9c0Nz2'
-    || this.uid === 'DXYmtm6X0tbQvczcO8iX5LgH9zD2'
-    || this.uid === 't7wGL1E2gJZgvNg34cnHCgQo7HH3'
-    || this.uid === '0Nbg2BHMYKdevTtsL43xQqaKTCo1'
-    || this.uid === 'xDEauBZ9jaYFUo9i5wL182y3TuH2';
+  isApproveToken = true;
   isMobileView = window.innerWidth < 768;
 
   expireTimeInSec: number = 0.0;
@@ -149,7 +145,7 @@ export class AppComponent implements OnInit{
         // @ts-ignore
         this.isAnonymous = u.anon;
         // @ts-ignore
-        this.isFirstTime = u.firstTime
+        this.isFirstTime = false;//u.firstTime
       });
     }
     if(this.plan_id){
@@ -662,12 +658,25 @@ export class AppComponent implements OnInit{
     this.analytics.logEvent('success_paypal', { "uid":this.uid, "plan": this.plan, "plan_id": this.plan_id});
     if(this.enteredEmail !== ''){
       // @ts-ignore
-      this.userService.putEmail(this.uid, this.enteredEmail).subscribe(res=>{});
+      this.userService.putEmail(this.uid, this.enteredEmail, this.server_version).subscribe(res=>{});
     }
   }
 
   successGPay() {
     this.analytics.logEvent('success_gpay', { "uid":this.uid, "plan": this.plan, "plan_id": this.plan_id});
+    if(this.isFirstTime) {
+      this.analytics.logEvent('purchase', {
+        "uid": this.uid,
+        "plan": this.plan,
+        "plan_id": this.plan_id,
+        "price": this.total,
+        "currency": "USD"
+      });
+    }
+  }
+
+  successAPay() {
+    this.analytics.logEvent('success_apay', { "uid":this.uid, "plan": this.plan, "plan_id": this.plan_id});
     if(this.isFirstTime) {
       this.analytics.logEvent('purchase', {
         "uid": this.uid,

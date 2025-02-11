@@ -25,8 +25,7 @@
     <p *ngIf="rolls" style="font-size:medium; margin: 0 0 0;">{{bonusDetails}}</p>
   </div>
   <div id="payment-form" class="panel panel-default bootstrap-basic" [ngStyle]="{'width': (isMobileView ? '100%' : '40%')}">
-    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && !version" id="paypal-button-container" style="padding-left: 9%; padding-right: 9%" (click)="increaseSessionTimeIfNeeded()"></div>
-    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && version" id="paypal-button-container"  style="padding-left: 9%; padding-right: 9%" (click)="increaseSessionTimeIfNeeded()"></div>
+    <div *ngIf="paypal_plan_id" id="paypal-button-container" style="flex: 1;padding-left: 9%; padding-right: 9%" (click)="increaseSessionTimeIfNeeded()"></div>
     <div style="width: 91%;
     margin: 0.5em 0;
     padding-left: 9%;
@@ -34,9 +33,9 @@
     <div style="width: 91%;
     margin: 0.5em 0;
     padding-left: 9%;">
-    <button style="width: 100%; visibility: hidden" id="apple-pay-button"></button>
+      <button style="width: 100%; visibility: hidden" *ngIf="showAPay && isApproveToken" id="apple-pay-button"></button>
     </div>
-    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && !version && token" style="display: flex; align-items: center; justify-content: center;
+    <div *ngIf="paypal_plan_id && (showGPay || showAPay) && !version && token && showBluesnap" style="display: flex; align-items: center; justify-content: center;
   margin: 1.5em 0;
   margin-bottom: 2em;">
       <hr style="flex: 1; border: none; border-top: 1px solid darkgrey; margin: 0;">
@@ -44,33 +43,35 @@
       <hr style="flex: 1; border: none; border-top: 1px solid darkgrey; margin: 0;">
     </div>
     <form class="panel-body" *ngIf="!version && token" id="checkout-form" action="#">
-      <div class="row" style="margin-bottom: -15px">
+      <div class="row" style="margin-bottom: -15px" *ngIf="showBluesnap">
         <!--Hosted Field for CC number-->
-        <div class="form-group col-md-12" style="margin-bottom: 0px; margin-top: -30px;">
-          <label for="card-number" style="font-size: small;">Card Number</label>
-          <div id="ccn-analytics" (click)="clickOnCard()"></div>
-          <div class="input-group">
-            <div class="form-control" id="card-number" data-bluesnap="ccn"></div>
-            <div id="card-logo" class="input-group-addon"><img src="https://files.readme.io/d1a25b4-generic-card.png" height="20px"></div>
+        <div>
+          <div class="form-group col-md-12" style="margin-bottom: 0px; margin-top: -30px;">
+            <label for="card-number" style="font-size: small;">Card Number</label>
+            <div id="ccn-analytics" (click)="clickOnCard()"></div>
+            <div class="input-group">
+              <div class="form-control" id="card-number" data-bluesnap="ccn"></div>
+              <div id="card-logo" class="input-group-addon"><img src="https://files.readme.io/d1a25b4-generic-card.png" height="20px"></div>
+            </div>
+            <span class="helper-text" id="ccn-help"></span>
           </div>
-          <span class="helper-text" id="ccn-help"></span>
-        </div>
-        <!--Hosted Field for CC EXP-->
-        <div class="col-xs-7" >
-          <label for="exp-date" style="font-size: small;">Exp. Date</label>
-          <div id="exp-analytics" (click)="clickOnExpDate()"></div>
-          <div class="form-control" id="exp-date" data-bluesnap="exp"></div>
-          <span class="helper-text" id="exp-help"></span>
-        </div>
-        <!--Hosted Field for CC CVV-->
-        <div class="col-xs-5">
-          <label for="cvv" style="font-size: small;">CVV</label>
-          <div id="cvv-analytics" (click)="clickOnCVV()"></div>
-          <div class="form-control" id="cvv" data-bluesnap="cvv" (click)="clickOnCVV()"></div>
-          <span class="helper-text" id='cvv-help'></span>
+          <!--Hosted Field for CC EXP-->
+          <div class="col-xs-7" >
+            <label for="exp-date" style="font-size: small;">Exp. Date</label>
+            <div id="exp-analytics" (click)="clickOnExpDate()"></div>
+            <div class="form-control" id="exp-date" data-bluesnap="exp"></div>
+            <span class="helper-text" id="exp-help"></span>
+          </div>
+          <!--Hosted Field for CC CVV-->
+          <div class="col-xs-5">
+            <label for="cvv" style="font-size: small;">CVV</label>
+            <div id="cvv-analytics" (click)="clickOnCVV()"></div>
+            <div class="form-control" id="cvv" data-bluesnap="cvv" (click)="clickOnCVV()"></div>
+            <span class="helper-text" id='cvv-help'></span>
+          </div>
         </div>
 
-        <div class="col-md-12" style="position: relative; " *ngIf="isAnonymous" >
+        <div class="col-md-12" style="position: static; " *ngIf="isAnonymous && showBluesnap" >
           <div style="width: 100%;
     height: 28px;
     background-color: grey;
@@ -96,14 +97,14 @@
         <p style="margin:0 0 0">{{detailString}}</p>
         <p style="margin:0 0 0; font-size: small" ><span style="font-weight: bold">Total:</span> {{total}} USD {{detailSharedString}}</p>
       </div>
-      <div style="text-align: center; margin-top: 1.5em">
+      <div style="text-align: center; margin-top: 1.5em" *ngIf="showBluesnap">
         <button class="btn btn-success btn-lg col-xs-6"
                 style="width:100%; font-size: 5vw !important;background-color: deeppink !important; text-align: center !important; border: none !important;"
                 type="button" id="submit-button"  onclick="do_when_clicking_submit_button()" (click)="increaseSessionTimeIfNeeded()">{{trial ? '3 Day Trial & Subscribe' : 'Subscribe'}}</button>
         <br/>
         <p style="font-size: x-small">Cancel anytime  <i class="fa fa-lock" style="margin-left: 1%" aria-hidden="true"> Secure payment</i></p>
       </div>
-      <div *ngIf="(showGPay || showAPay) && !expired && showTimer" style="text-align: center;width: 100%; font-size: small">Session expires: {{ expireDetails }}</div>
+      <div *ngIf="(showGPay || showAPay || !isApproveToken) && !expired && showTimer" style="text-align: center;width: 100%; font-size: small">Session expires: {{ expireDetails }}</div>
 
       <div id="subscribe-analytics" (click)="clickOnSubscribe()"></div>
       <div id="subscribe-gpay" (click)="clickOnGpay()"></div>
@@ -111,6 +112,7 @@
       <div id="valid-bluesnap-analytics" (click)="validBluesnap()"></div>
       <div id="success-paypal" (click)="successPaypal()"></div>
       <div id="success-gpay" (click)="successGPay()"></div>
+      <div id="success-apay" (click)="successAPay()"></div>
       <div id="invalid-bluesnap-analytics" (click)="inValidBluesnap()"></div>
       <div id="subscribe-analytics-success" (click)="clickOnSubscribeSuccess()"></div>
       <div id="subscribe-analytics-error" (click)="clickOnSubscribeError()"></div>
@@ -123,7 +125,7 @@
   </div>
   <div id="payment-success" class="successScreen" style="display: none">
     <div class="card">
-      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto; text-align: center">
+      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
         <i class="success-checkmark">✓</i>
       </div>
       <h1 class="successH1">Success!</h1>
