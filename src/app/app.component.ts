@@ -196,7 +196,7 @@ export class AppComponent implements OnInit{
       } else {
         planId = this.plan
           + (this.trial ? '_TRIAL' : '') + '_'
-          + (this.animalIds != null ? this.animalIds.split(',').length : 0) + (this.price != null
+          +  (this.price != null
             ? '_' + this.price.replace('.', '__') : '');
       }
       this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
@@ -423,7 +423,6 @@ export class AppComponent implements OnInit{
               }
             } else {
               planId = this.plan + (this.trial ? '_TRIAL' : '') + '_'
-                + (this.animalIds != null ? this.animalIds.split(',').length : 0)
                 +  '_' + this.price.replace('.', '__');
             }
             this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
