@@ -195,7 +195,7 @@ export class AppComponent implements OnInit{
 
       } else {
         planId = this.plan
-          + (this.trial ? '_TRIAL' : '') + '_'
+          + (this.trial ? '_TRIAL' : '')
           +  (this.price != null
             ? '_' + this.price.replace('.', '__') : '');
       }
@@ -422,7 +422,7 @@ export class AppComponent implements OnInit{
                 this.detailSharedString = '(26,880 kibbles / 84 meals)'
               }
             } else {
-              planId = this.plan + (this.trial ? '_TRIAL' : '') + '_'
+              planId = this.plan + (this.trial ? '_TRIAL' : '')
                 +  '_' + this.price.replace('.', '__');
             }
             this.paymentService.getPlan({uid: this.uid, planId: planId, server_version: this.server_version})
