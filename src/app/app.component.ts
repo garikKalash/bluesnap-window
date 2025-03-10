@@ -154,7 +154,7 @@ export class AppComponent implements OnInit{
         planId = 'FREE_DELIVERY' +  (this.price != null
           ? '_' + this.price.replace('.', '__') : '');
       } else if(this.plan != null && this.plan.includes('SHARED')){
-        planId = this.plan + '_0' +  (this.price != null
+        planId = this.plan +  (this.price != null
           ? '_' + this.price.replace('.', '__') : '');
         if(this.plan.includes('MEAL_1_')) {
           this.detailSharedString = '(8,960 kibbles / 28 meals)'
@@ -394,7 +394,7 @@ export class AppComponent implements OnInit{
             if(this.plan == 'FREE_DELIVERY') {
               planId = 'FREE_DELIVERY' +  '_' + this.price.replace('.', '__');
             } else if(this.plan != null && this.plan.includes('SHARED')){
-              planId = this.plan + '_0' +  '_' + this.price.replace('.', '__');
+              planId = this.plan +  '_' + this.price.replace('.', '__');
               if(this.plan.includes('MEAL_1')) {
                 this.detailSharedString = '(8,960 kibbles / 28 meals)'
               }  else if(this.plan.includes('MEAL_6')) {
